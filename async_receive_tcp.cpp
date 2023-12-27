@@ -12,6 +12,7 @@ class tcp_client : public std::enable_shared_from_this<tcp_client> {
         : _io_context(io_context), _socket(io_context) {
             resolve_host(host, port);
             boost::asio::connect(_socket, _endpoints);
+            read_from_host();
         }
 
         void resolve_host(std::string_view host, std::string_view port) {
@@ -20,30 +21,54 @@ class tcp_client : public std::enable_shared_from_this<tcp_client> {
         }
 
         void read_from_host() {
-            std::array<char, 128> buf;
-            boost::system::error_code error;
+            // boost::system::error_code error;
 
-            while (true) {
-                std::array<char, 128> buf;
-                boost::system::error_code error;
+            // while (true) {
+            //     boost::system::error_code error;
 
-                size_t len = _socket.read_some(boost::asio::buffer(buf), error);
+            //     size_t len = _socket.read_some(boost::asio::buffer(_buf), error);
 
-                if (error == boost::asio::error::eof) {
-                    std::cout << "Connection closed by host" << std::endl;
-                    break; 
-                } 
-                else if (error) {
-                    throw boost::system::system_error(error); // Some other error.
+            //     if (error == boost::asio::error::eof) {
+            //         std::cout << "Connection closed by host" << std::endl;
+            //         break; 
+            //     } 
+            //     else if (error) {
+            //         throw boost::system::system_error(error); // Some other error.
+            //     }
+            //     std::cout.write(_buf.data(), len);
+            // }
+            std::string message_ = "write_to";
+
+            boost::asio::async_write(_socket, boost::asio::buffer(message_),
+                std::bind(&tcp_client::handle_write, this,
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::bytes_transferred));
+
+            boost::asio::async_read(_socket, boost::asio::buffer(_buf),
+                std::bind(&tcp_client::handle_read, this,
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::bytes_transferred));
+        }
+
+        void handle_read(boost::system::error_code error, std::size_t bytes_transferred) {
+            std::cout << "read" << std::endl;
+            for (char c : _buf) {
+                if (c == 'Z') {
+                    return;
                 }
-                std::cout.write(buf.data(), len);
+                std::cout << c;
             }
+        }
+
+        void handle_write(boost::system::error_code error, std::size_t bytes_transferred) {
+            std::cout << "write" << std::endl;
         }
 
     private:
         boost::asio::io_context& _io_context;
         tcp::socket _socket;
         tcp::resolver::results_type _endpoints;
+        std::array<char, 128> _buf;
 };
 
 
@@ -56,11 +81,12 @@ int main(int argc, char* argv[]) {
 
         boost::asio::io_context io_context;
         
-
-
         tcp_client client(io_context, argv[1], argv[2]);
-        client.read_from_host();
+        std::cout << "this is after";
         io_context.run();
+        
+        // client.read_from_host();
+        
 
         // for (std::string line; std::getline(std::cin, line);) {
         //     std::cout << line << std::endl;

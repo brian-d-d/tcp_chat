@@ -9,14 +9,14 @@
 
 using boost::asio::ip::tcp;
 
-class tcp_client : public std::enable_shared_from_this<tcp_client> {
+class tcp_client {
     public: 
         tcp_client(boost::asio::io_context& io_context, std::string_view host, std::string_view port) 
         : _io_context(io_context), _socket(io_context) {
             resolve_host(host, port);
             boost::asio::connect(_socket, _endpoints);
             read_from_host();
-            write_to_host();
+            write_to_host("hello\n");
         }
 
         void resolve_host(std::string_view host, std::string_view port) {
@@ -31,20 +31,8 @@ class tcp_client : public std::enable_shared_from_this<tcp_client> {
                     boost::asio::placeholders::bytes_transferred));
         }
 
-        void write_to_host() {
-            for (std::string line; std::getline(std::cin, line);) {
-                // std::cout << line << std::endl;
-                boost::asio::async_write(_socket, boost::asio::buffer(line),
-                    std::bind(&tcp_client::handle_write, this,
-                    boost::asio::placeholders::error,
-                    boost::asio::placeholders::bytes_transferred));
-                
-                if (line == "switch") {
-                    std::cout << "hit";
-                    read_from_host();
-                    return;
-                }
-            }
+        void write_to_host(std::string line) {
+                boost::asio::write(_socket, boost::asio::buffer(line));
         }
         
     private:
@@ -59,7 +47,11 @@ class tcp_client : public std::enable_shared_from_this<tcp_client> {
             std::cout << istream.rdbuf();
 
             _buffer.consume(_buffer.size());
-            read_from_host();
+
+            boost::asio::async_read_until(_socket, _buffer, '\n', 
+                    std::bind(&tcp_client::handle_read, this,
+                    boost::asio::placeholders::error,
+                    boost::asio::placeholders::bytes_transferred));
         }
 
         void handle_write(const boost::system::error_code& error, std::size_t bytes_transferred) {

@@ -12,25 +12,29 @@ std::string convert_to_string(char arr[]) {
     return str;
 }
 
-option_code handle_option(char specifer[], char argument[], std::vector<std::pair<std::string, std::string>>& options_v) {
-    std::string specifer_str = convert_to_string(specifer);
+option_code handle_option(char specifier[], char argument[], options_vector& options_v) {
+    std::string specifier_str = convert_to_string(specifier);
     std::string argument_str = convert_to_string(argument);
 
-    if (!specifer_str.contains("-")) {
-        std::cout << "Invalid option: " << specifer_str << std::endl;
-        return option_code::option_error;
+    if (!specifier_str.contains("-")) {
+        std::cout << "Invalid option: " << specifier_str << std::endl;
+        return option_code::invalid_option;
     }
     
-    options_v.push_back(std::pair<std::string, std::string>(specifer_str, argument_str));
-    return option_code::no_error;
+    options_v.push_back(std::pair<std::string, std::string>(specifier_str, argument_str));
+    return option_code::success;
 }
 
-option_code handle_options(int option_c, char* options[], std::vector<std::pair<std::string, std::string>>& options_v) {
+option_code handle_options(int option_c, char* options[], options_vector& options_v) {
+    if (option_c <= 2) {
+        std::cout << "No options entered" << std::endl;
+        return option_code::not_enough_options;
+    }
     for (int i = 1; i <= (option_c - 1); i += 2) { 
         option_code ec = handle_option(options[i], options[i+1], options_v);
-        if (ec != option_code::no_error) {
-            return option_code::overall_error;
+        if (ec != option_code::success) {
+            return ec;
         }
     }
-    return option_code::no_error;
+    return option_code::success;
 }

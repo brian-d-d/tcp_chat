@@ -7,7 +7,7 @@
 int main(int argc, char* argv[]) {
     std::vector<std::pair<std::string, std::string>> options_v;
 
-    if (handle_options(argc, argv, options_v) != option_code::no_error) {
+    if (handle_options(argc, argv, options_v) != option_code::success) {
         std::cout << "An error occured, exiting..." << std::endl;
         return 1;
     }

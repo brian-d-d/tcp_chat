@@ -1,10 +1,7 @@
-#include <ctime>
-#include <functional>
 #include <iostream>
 #include <string>
 #include <cstdlib>
 #include <boost/asio.hpp>
-#include <boost/regex.hpp>
 #include <boost/asio/posix/stream_descriptor.hpp>
 #include <boost/asio/posix/basic_descriptor.hpp>
 
@@ -12,8 +9,8 @@ using boost::asio::ip::tcp;
 
 class tcp_client {
     public: 
-        tcp_client(boost::asio::io_context& io_context, std::string_view host, std::string_view port) :
-        _io_context(io_context), _socket(io_context), _stdin(io_context, ::dup(STDIN_FILENO)) {
+        tcp_client(boost::asio::io_context& io_context, std::string_view host, std::string_view port)
+        : _io_context(io_context), _socket(io_context), _stdin(io_context, ::dup(STDIN_FILENO)) {
             resolve_host(host, port);
             boost::asio::connect(_socket, _endpoints);
             read_from_socket();
@@ -65,7 +62,6 @@ class tcp_client {
             read_from_stdin();
         }
 };
-
 
 int main(int argc, char* argv[]) {
     try {

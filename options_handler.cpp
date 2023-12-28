@@ -2,12 +2,7 @@
 #include <string>
 #include <array>
 #include <vector>
-
-enum option_code {
-    no_error,
-    option_error,
-    overall_error
-};
+#include "options_handler.h"
 
 std::string convert_to_string(char arr[]) {
     std::string str = std::string();
@@ -39,18 +34,3 @@ option_code handle_options(int option_c, char* options[], std::vector<std::pair<
     }
     return option_code::no_error;
 }
-
-int main(int argc, char* argv[]) {
-    std::vector<std::pair<std::string, std::string>> options_v;
-
-    if (handle_options(argc, argv, options_v) != option_code::no_error) {
-        std::cout << "An error occured, exiting..." << std::endl;
-        return 1;
-    }
-    for (std::pair<std::string, std::string> opt_arg : options_v) {
-        std::cout << opt_arg.first << " : " << opt_arg.second << std::endl;
-    }
-
-    return 0;
-}
-

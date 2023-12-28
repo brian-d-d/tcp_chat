@@ -6,6 +6,7 @@
 enum option_code {
     success,
     invalid_option,
+    invalid_option_count,
     not_enough_options
 };
 

@@ -26,9 +26,13 @@ option_code handle_option(char specifier[], char argument[], options_vector& opt
 }
 
 option_code handle_options(int option_c, char* options[], options_vector& options_v) {
-    if (option_c <= 2) {
+    if (option_c == 1) {
         std::cout << "No options entered" << std::endl;
         return option_code::not_enough_options;
+    }
+    else if (option_c > 1 && option_c % 2 != 1) {
+        std::cout << "Invalid value to argument count" << std::endl;
+        return option_code::invalid_option_count;
     }
     for (int i = 1; i <= (option_c - 1); i += 2) { 
         option_code ec = handle_option(options[i], options[i+1], options_v);

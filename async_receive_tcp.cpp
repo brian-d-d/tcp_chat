@@ -49,6 +49,11 @@ class tcp_client {
         boost::asio::posix::stream_descriptor _stdin;
 
         void handle_read_socket(const boost::system::error_code& error, std::size_t bytes_transferred) {
+            if (error) {
+                _socket.close();
+                _io_context.stop();
+                return;
+            }
             std::istream istream(&_socket_buffer);
             std::cout << istream.rdbuf();
 

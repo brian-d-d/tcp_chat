@@ -45,14 +45,13 @@ int main(int argc, char* argv[]) {
         if (!opt_code == option_code::success) {
             return 1;
         }
-        
+
         pass_options(option_vec, client);
 
         boost::asio::executor_work_guard<decltype(io_context.get_executor())> work{io_context.get_executor()};
 
         io_context.run();
         
-        std::cout << "Connection closed" << std::endl;
         
     }
     catch (std::exception& e) {

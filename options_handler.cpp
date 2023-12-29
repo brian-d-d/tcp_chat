@@ -43,13 +43,22 @@ option_code handle_options(int option_c, char* options[], string_pair_vector& op
     return option_code::success;
 }
 
-// void check_options(std::string_view host, std::string_view port) {
-//             for (std::pair<std::string, std::string> option_argument : _options_vector ) {
-//                 if (option_argument.first == "-l") {
-//                     accept_connection();
-//                 }
-//                 else if (option_argument.first == "-c") {
-//                     connect_to()
-//                 }
-//             }
-//         }
+void pass_options(string_pair_vector& options_vector, tcp_client& tcp_connection) {
+    std::string_view host;
+    std::string_view port;
+    for (std::pair<std::string, std::string> option_argument : options_vector) {
+        if (option_argument.first == "-l") {
+            tcp_connection.accept_connection(str_to_int(option_argument.second));
+            return;
+        }
+        else if (option_argument.first == "-i") {
+            host = option_argument.second;
+        }
+        else if (option_argument.first == "-p") {
+            // port = option_argument.second;
+        }
+    }
+    std::cout << host << std::endl;
+    std::cout << port << std::endl;
+    tcp_connection.connect_to(host, port);
+}

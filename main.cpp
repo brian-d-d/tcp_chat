@@ -24,14 +24,29 @@
 
 int main(int argc, char* argv[]) {
     try {
-        if (argc != 3) {
-            std::cerr << "Usage: client <host> <port>" << std::endl;
-            return 1;
-        }
+        // if (argc != 3) {
+        //     std::cerr << "Usage: client <host> <port>" << std::endl;
+        //     return 1;
+        // }
 
         boost::asio::io_context io_context;
+        tcp_client client(io_context);
         
-        tcp_client client(io_context, argv[1], argv[2]);
+
+        string_pair_vector option_vec(0);
+
+        // std::string temp = "12345";
+        // int val = str_to_int(temp);
+
+        // std::cout << val;
+
+        option_code opt_code = handle_options(argc, argv, option_vec);
+
+        if (!opt_code == option_code::success) {
+            return 1;
+        }
+        
+        pass_options(option_vec, client);
 
         boost::asio::executor_work_guard<decltype(io_context.get_executor())> work{io_context.get_executor()};
 

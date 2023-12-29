@@ -1,7 +1,7 @@
 C++ = g++
 C++FLAGS = -Wall -Werror -std=c++23
 
-all: async_client_tcp.o main.o
+all: async_client_tcp.o main.o options_handler.o
 	$(C++) $(C++FLAGS) $^ -o async_tcp
 
 

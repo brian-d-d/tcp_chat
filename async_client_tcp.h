@@ -1,3 +1,6 @@
+#ifndef __ASYNC_CLIENT_TCP_H
+#define __ASYNC_CLIENT_TCP_H
+
 #include <iostream>
 #include <string>
 #include <cstdlib>
@@ -10,11 +13,11 @@ using boost::asio::ip::tcp;
 
 class tcp_client {
     public: 
-        tcp_client(boost::asio::io_context& io_context, std::string_view host, std::string_view port);
+        tcp_client(boost::asio::io_context& io_context);
 
         void connect_to(std::string_view host, std::string_view port);
             
-        void accept_connection();
+        void accept_connection(int port);
 
         void read_from_socket();
 
@@ -38,3 +41,5 @@ class tcp_client {
 
         void handle_read_stdin(const boost::system::error_code& error, std::size_t bytes_transferred);
 };
+
+#endif

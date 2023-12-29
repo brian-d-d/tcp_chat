@@ -5,11 +5,7 @@ tcp_client::tcp_client(boost::asio::io_context& io_context) :
     _socket(io_context), 
     _stdin(io_context, ::dup(STDIN_FILENO)), 
     _acceptor(io_context), 
-    _connection_status(false) {
-        // connect_to(host, port);
-        
-        // accept_connection();
-        
+    _connection_status(false) { 
 }
 
 void tcp_client::connect_to(std::string_view host, std::string_view port) {

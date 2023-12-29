@@ -1,7 +1,3 @@
-#include <iostream>
-#include <string>
-#include <array>
-#include <vector>
 #include "options_handler.h"
 
 std::string arr_to_string(char arr[]) {
@@ -16,7 +12,7 @@ int str_to_int(std::string str) {
     return std::stoi(str.data());
 }
 
-option_code handle_option(char specifier[], char argument[], options_vector& options_vec) {
+option_code handle_option(char specifier[], char argument[], string_pair_vector& options_vec) {
     std::string specifier_str = arr_to_string(specifier);
     std::string argument_str = arr_to_string(argument);
 
@@ -29,7 +25,7 @@ option_code handle_option(char specifier[], char argument[], options_vector& opt
     return option_code::success;
 }
 
-option_code handle_options(int option_c, char* options[], options_vector& options_vec) {
+option_code handle_options(int option_c, char* options[], string_pair_vector& options_vec) {
     if (option_c == 1) {
         std::cout << "No options entered" << std::endl;
         return option_code::not_enough_options;
@@ -46,3 +42,14 @@ option_code handle_options(int option_c, char* options[], options_vector& option
     }
     return option_code::success;
 }
+
+// void check_options(std::string_view host, std::string_view port) {
+//             for (std::pair<std::string, std::string> option_argument : _options_vector ) {
+//                 if (option_argument.first == "-l") {
+//                     accept_connection();
+//                 }
+//                 else if (option_argument.first == "-c") {
+//                     connect_to()
+//                 }
+//             }
+//         }

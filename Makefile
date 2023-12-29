@@ -1,7 +1,10 @@
 C++ = g++
 C++FLAGS = -Wall -Werror -std=c++23
 
-all: async_client_tcp.o 
+all: async_client_tcp.o main.o
+	$(C++) $(C++FLAGS) $^ -o async_tcp
+
+
 opt: options_handler.o
 
 # CPP_FILES=$$(ls *.cpp | cut -f 1 -d '.')

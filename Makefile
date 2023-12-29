@@ -13,7 +13,7 @@ cli_handler: options_handler.o main.o
 	$(C++) $(C++FLAGS) $^ -o cli_handler
 
 %.o: %.cpp
-	$(C++) $(C++FLAGS) $< -o $@ 
+	$(C++) $(C++FLAGS) -c $< -o $@ 
 
 clean: 
 	rm *.o

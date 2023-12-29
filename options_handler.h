@@ -12,7 +12,9 @@ enum option_code {
 
 typedef std::vector<std::pair<std::string, std::string>> options_vector;
 
-std::string convert_to_string(char arr[]);
+std::string arr_to_string(char arr[]);
+
+int str_to_int(std::string str);
 
 option_code handle_option(char specifer[], char argument[], options_vector& options_v);
 

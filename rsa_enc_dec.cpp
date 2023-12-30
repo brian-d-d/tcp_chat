@@ -41,7 +41,10 @@ bool rsa_enc_dec::getStatus() {
 }
 
 std::string rsa_enc_dec::getPublicKey() {
-    return;
+    std::string public_key;
+    CryptoPP::StringSink sink(public_key);
+    _public_key.Save(sink);
+    return public_key;
 }
 
 void rsa_enc_dec::setStatus(bool status) {

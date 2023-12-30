@@ -39,7 +39,9 @@ class tcp_client {
         boost::asio::posix::stream_descriptor _stdin;
         tcp::acceptor _acceptor;
         bool _connection_status;
+        bool _header_received;
         rsa_enc_dec _enc_dec;
+        std::string _their_public_key;
 
         void handle_connection(const boost::system::error_code& error);
 

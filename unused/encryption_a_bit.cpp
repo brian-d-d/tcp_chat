@@ -6,9 +6,9 @@ tcp_client::tcp_client(boost::asio::io_context& io_context) :
     _stdin(io_context, ::dup(STDIN_FILENO)), 
     _acceptor(io_context), 
     _connection_status(false),
-    _header_received(false),
+    _public_key_transferred(0),
     _enc_dec(),
-    _their_public_key("") { 
+    _their_public_key() { 
 }
 
 void tcp_client::enable_encryption(unsigned int key_bits) {
@@ -23,13 +23,6 @@ void tcp_client::connect_to(std::string_view host, std::string_view port) {
     boost::asio::connect(_socket, _endpoints);
     
     _connection_status = true;
-    //CHANGE
-    _enc_dec.setStatus(true);
-    
-    write_to_host(_enc_dec.getPublicKey());
-    std::cout << "my public key: " << _enc_dec.getPublicKey().size() << std::endl;
-    std::cout << _enc_dec.getPublicKey() << std::endl;
-    
     read_from_socket();
     read_from_stdin();
 }
@@ -40,9 +33,6 @@ void tcp_client::accept_connection(int port) {
         std::bind(&tcp_client::handle_connection, this,
         boost::asio::placeholders::error));
 
-        std::cout << "my public key: " << _enc_dec.getPublicKey().size() << std::endl;
-        std::cout << _enc_dec.getPublicKey() << std::endl;
-
     read_from_socket();
     read_from_stdin();
 }
@@ -50,6 +40,13 @@ void tcp_client::accept_connection(int port) {
 void tcp_client::read_from_socket() {
     _socket.async_read_some(boost::asio::buffer(_socket_buffer, _socket_buffer.size()), 
         std::bind(&tcp_client::handle_read_socket, this,
+        boost::asio::placeholders::error,
+        boost::asio::placeholders::bytes_transferred));
+}
+
+void tcp_client::read_from_socket_header() {
+    _socket.async_read_some(boost::asio::buffer(_socket_buffer, _socket_buffer.size()), 
+        std::bind(&tcp_client::handle_read_socket_header, this,
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred));
 }
@@ -77,9 +74,11 @@ void tcp_client::handle_connection(const boost::system::error_code& error) {
         _connection_status = true;
 
         if (_enc_dec.getStatus()) {
+            write_to_host("pub_key:\n");
+            std::cout << (_enc_dec.getPublicKey()).size() << std::endl;
+            std::cout << _enc_dec.getPublicKey() << std::endl;
             write_to_host(_enc_dec.getPublicKey());
         }
-
 
         read_from_socket();
         read_from_stdin();
@@ -89,20 +88,35 @@ void tcp_client::handle_connection(const boost::system::error_code& error) {
 void tcp_client::handle_read_socket(const boost::system::error_code& error, std::size_t bytes_transferred) {
     if (!error) {
         std::string data = std::string(_socket_buffer.data(), bytes_transferred);
-        if (_header_received || (!_enc_dec.getStatus())) {
-            std::cout << data;
-            std::cout << "<- in " << make_time_string() << std::endl;
+        if (data == "pub_key:\n") {
+            std::cout << "got header starter" << std::endl;
+            _encryption_header = true;
+            read_from_socket_header();
+            return;
+        }
+        std::cout << data;
+        std::cout << "<- in " << make_time_string() << std::endl;
+        read_from_socket();
+    }
+    else if (error && _connection_status) {
+        _socket.close();
+        _io_context.stop();
+    }
+}
+
+void tcp_client::handle_read_socket_header(const boost::system::error_code& error, std::size_t bytes_transferred) {
+    if (!error) {
+        std::string data = std::string(_socket_buffer.data(), bytes_transferred);
+        if (_public_key_transferred == 548) {
+            std::cout << "hit count" << std::endl;
+            read_from_socket();
         }
         else {
-             _their_public_key.append(data);
-            if (_their_public_key.size() == 548) {
-                _header_received = true;
-                std::cout << "their public key: " << _their_public_key.size() << std::endl;
-                
-                std::cout << _their_public_key << std::endl;
-            }
+            std::cout << "count is: " << _public_key_transferred << std::endl;
+            _public_key_transferred += bytes_transferred;
+            _their_public_key.append(data.data());
+            read_from_socket_header();
         }
-        read_from_socket();
     }
     else if (error && _connection_status) {
         _socket.close();

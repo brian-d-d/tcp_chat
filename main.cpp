@@ -7,6 +7,7 @@
 #include <boost/asio/posix/basic_descriptor.hpp>
 #include "options_handler.h"
 #include "async_client_tcp.h"
+#include "rsa_enc_dec.h"
 
 int main(int argc, char* argv[]) {
     try {
@@ -31,4 +32,5 @@ int main(int argc, char* argv[]) {
     catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
     }
+
 }

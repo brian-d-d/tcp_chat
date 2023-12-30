@@ -24,6 +24,8 @@ class tcp_client {
         void read_from_stdin();
 
         void write_to_host(std::string line);
+
+        std::string make_time_string();
         
     private:
         boost::asio::io_context& _io_context;

@@ -45,6 +45,13 @@ void tcp_client::read_from_stdin() {
 void tcp_client::write_to_host(std::string line) {
     boost::asio::write(_socket, boost::asio::buffer(line));
 }
+
+std::string tcp_client::make_time_string() {
+  std::time_t now = time(0);
+  std::string time_date = ctime(&now);
+  std::string time = time_date.substr(11, 8);
+  return time;
+}
     
 void tcp_client::handle_connection(const boost::system::error_code& error) {
     if (_socket.is_open()) {
@@ -58,6 +65,8 @@ void tcp_client::handle_read_socket(const boost::system::error_code& error, std:
     if (!error) {
         std::string data = std::string(_socket_buffer.data(), bytes_transferred);
         std::cout << data;
+        std::cout << "<- in " << make_time_string() << std::endl;
+        
         read_from_socket();
     }
     else if (error && _connection_status) {
@@ -70,6 +79,8 @@ void tcp_client::handle_read_stdin(const boost::system::error_code& error, std::
     std::string data = std::string(_stdin_buffer.data(), bytes_transferred);
     if (_socket.is_open()) {
         write_to_host(data);
+        std::cout << "-> out " << make_time_string() << std::endl;
+
         read_from_stdin();
     }
 }

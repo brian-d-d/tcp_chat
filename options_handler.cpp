@@ -76,5 +76,4 @@ option_code pass_options(string_pair_vector& options_vector, tcp_client& tcp_con
         std::cout << "Invalid combination of arguments" << std::endl;
         return option_code::invalid_option_combination;
     }
-    
 }

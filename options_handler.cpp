@@ -43,20 +43,38 @@ option_code handle_options(int option_c, char* options[], string_pair_vector& op
     return option_code::success;
 }
 
-void pass_options(string_pair_vector& options_vector, tcp_client& tcp_connection) {
+option_code pass_options(string_pair_vector& options_vector, tcp_client& tcp_connection) {
     std::string host;
     std::string port;
+    bool listen;
+    bool connect;
     for (std::pair<std::string, std::string> option_argument : options_vector) {
         if (option_argument.first == "-l") {
-            tcp_connection.accept_connection(str_to_int(option_argument.second));
-            return;
+            port = std::string(option_argument.second);
+            listen = true;
         }
-        else if (option_argument.first == "-i") {
+        else if (option_argument.first == "-h") {
             host = std::string(option_argument.second);
+            connect = true;
         }
         else if (option_argument.first == "-p") {
             port = std::string(option_argument.second);
+            connect = true;
         }
     }
-    tcp_connection.connect_to(host, port);
+    //Listen mode
+    if (listen == true && connect == false) {
+        tcp_connection.accept_connection(str_to_int(port));
+        return option_code::success;
+    }
+    //Connect mode
+    else if (connect == true && listen == false) {
+        tcp_connection.connect_to(host, port);
+        return option_code::success;
+    }
+    else {
+        std::cout << "Invalid combination of arguments" << std::endl;
+        return option_code::invalid_option_combination;
+    }
+    
 }

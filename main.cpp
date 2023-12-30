@@ -14,13 +14,15 @@ int main(int argc, char* argv[]) {
         tcp_client client(io_context);
         
         string_pair_vector option_vec;
-        option_code opt_code = handle_options(argc, argv, option_vec);
 
-        if (!opt_code == option_code::success) {
+        if (!handle_options(argc, argv, option_vec) == option_code::success) {
             return 1;
         }
 
-        pass_options(option_vec, client);
+        if (!pass_options(option_vec, client) == option_code::success) {
+            return 1;
+        }
+        
         boost::asio::executor_work_guard<decltype(io_context.get_executor())> work{io_context.get_executor()};
 
         io_context.run();

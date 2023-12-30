@@ -9,18 +9,25 @@
 
 class rsa_enc_dec {
     public:
-        rsa_enc_dec(unsigned int key_bits);
+        rsa_enc_dec();
 
         void generate_keys(unsigned int key_bits);
 
-        std::string encrypt_text(std::string text);
+        std::string encrypt_text(std::string text, CryptoPP::RSA::PublicKey& public_key);
 
-        std::string decrypt_text(std::string text);
+        std::string decrypt_text(std::string text, CryptoPP::RSA::PrivateKey& private_key);
+
+        bool getStatus();
+
+        std::string getPublicKey();
+
+        void setStatus(bool status);
 
     private:
         CryptoPP::AutoSeededRandomPool _rng;
         CryptoPP::RSA::PrivateKey _private_key;
         CryptoPP::RSA::PublicKey _public_key;
+        bool _encryption_enabled;
 };
 
 #endif

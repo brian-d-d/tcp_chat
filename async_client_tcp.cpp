@@ -5,7 +5,14 @@ tcp_client::tcp_client(boost::asio::io_context& io_context) :
     _socket(io_context), 
     _stdin(io_context, ::dup(STDIN_FILENO)), 
     _acceptor(io_context), 
-    _connection_status(false) { 
+    _connection_status(false),
+    _enc_dec() { 
+}
+
+void tcp_client::enable_encryption(unsigned int key_bits) {
+    _enc_dec.generate_keys(key_bits);
+    _enc_dec.setStatus(true);
+    //Send header with public key and get other person to send it back
 }
 
 void tcp_client::connect_to(std::string_view host, std::string_view port) {
@@ -56,6 +63,12 @@ std::string tcp_client::make_time_string() {
 void tcp_client::handle_connection(const boost::system::error_code& error) {
     if (_socket.is_open()) {
         _connection_status = true;
+
+        if (_enc_dec.getStatus()) {
+    
+        }
+
+
         read_from_socket();
         read_from_stdin();
     }

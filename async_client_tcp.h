@@ -22,6 +22,8 @@ class tcp_client {
         void connect_to(std::string_view host, std::string_view port);
             
         void accept_connection(int port);
+
+        void setDelimiter(std::string delimiter);
     
     private:
         boost::asio::io_context& _io_context;

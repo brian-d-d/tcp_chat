@@ -5,20 +5,29 @@ tcp_client::tcp_client(boost::asio::io_context& io_context) :
     _socket(io_context), 
     _stdin(io_context, ::dup(STDIN_FILENO)), 
     _acceptor(io_context), 
-    _connection_status(false) { 
+    _enc_dec(),
+    _connection_status(false),
+    _their_public_key_received(false) { 
 }
 
-// void tcp_client::enable_encryption(unsigned int key_bits) {
-//     _enc_dec.generate_keys(key_bits);
-//     _enc_dec.setStatus(true);
-//     //Send header with public key and get other person to send it back
-// }
+void tcp_client::enable_encryption(unsigned int key_bits) {
+    _enc_dec.generate_keys(key_bits);
+
+    // std::string public_key = _enc_dec.getPublicKey();
+    // std::cout << public_key << std::endl;
+    // _enc_dec.setTheirPublicKey(public_key);
+    // std::cout << _enc_dec.getTheirPublicKey() << std::endl;
+}
 
 void tcp_client::connect_to(std::string_view host, std::string_view port) {
     tcp::resolver resolver(_io_context);
     _endpoints = resolver.resolve(host, port);
     boost::asio::connect(_socket, _endpoints);
     _connection_status = true;
+
+    write_to_host(_enc_dec.getPublicKey());
+    std::cout << _enc_dec.getPublicKey() << std::endl;
+    receive_their_public_key();
 
     read_from_socket();
     read_from_stdin();
@@ -58,10 +67,22 @@ std::string tcp_client::make_time_string() {
   std::string time = time_date.substr(11, 8);
   return time;
 }
+
+std::string tcp_client::receive_their_public_key() {
+    boost::asio::streambuf their_public_key;
+    boost::asio::read(_socket, their_public_key, boost::asio::transfer_exactly(key_size::rsa_2048));
+    std::string string = {boost::asio::buffers_begin(their_public_key.data()), boost::asio::buffers_end(their_public_key.data())};
+    std::cout << string << std::endl;
+    return string;
+}
     
 void tcp_client::handle_connection(const boost::system::error_code& error) {
     if (_socket.is_open()) {
         _connection_status = true;
+
+        receive_their_public_key();
+        std::cout << _enc_dec.getPublicKey() << std::endl;
+        write_to_host(_enc_dec.getPublicKey());
 
         read_from_socket();
         read_from_stdin();
@@ -71,8 +92,8 @@ void tcp_client::handle_connection(const boost::system::error_code& error) {
 void tcp_client::handle_read_socket(const boost::system::error_code& error, std::size_t bytes_transferred) {
     if (!error) {
         std::string data = std::string(_socket_buffer.data(), bytes_transferred);
-            std::cout << data;
-            std::cout << "<- in " << make_time_string() << std::endl;
+        std::cout << data;
+        std::cout << "<- in " << make_time_string() << std::endl;
         
         read_from_socket();
     }

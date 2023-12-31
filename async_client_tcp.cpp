@@ -41,11 +41,6 @@ void tcp_client::accept_connection(int port) {
 }
 
 void tcp_client::read_from_socket() {
-    // _socket.async_read_some(boost::asio::buffer(_socket_buffer, _socket_buffer.size()), 
-    //     std::bind(&tcp_client::handle_read_socket, this,
-    //     boost::asio::placeholders::error,
-    //     boost::asio::placeholders::bytes_transferred));
-
     boost::asio::async_read_until(_socket, _encrypted_socket_buffer, boost::regex(_delimiter), 
         std::bind(&tcp_client::handle_read_socket, this,
         boost::asio::placeholders::error,
@@ -96,9 +91,13 @@ void tcp_client::handle_read_socket(const boost::system::error_code& error, std:
     if (!error) {
         std::string data = {boost::asio::buffers_begin(_encrypted_socket_buffer.data()), 
                             boost::asio::buffers_begin(_encrypted_socket_buffer.data()) + (bytes_transferred - _delimiter.size())};
-
-        std::string decrypted_string = _enc_dec.decrypt_text(data);
-        std::cout << decrypted_string;
+        if (_enc_dec.getStatus()) {
+            std::string decrypted_string = _enc_dec.decrypt_text(data);
+            std::cout << decrypted_string;
+        }
+        else {
+            std::cout << data;
+        }
         std::cout << "<- in " << make_time_string() << std::endl;
         _encrypted_socket_buffer.consume(bytes_transferred);
         
@@ -113,7 +112,12 @@ void tcp_client::handle_read_socket(const boost::system::error_code& error, std:
 void tcp_client::handle_read_stdin(const boost::system::error_code& error, std::size_t bytes_transferred) {
     std::string data = std::string(_stdin_buffer.data(), bytes_transferred);
     if (_socket.is_open()) {
-        write_to_host(_enc_dec.encrypt_text(data) + _delimiter);
+        if (_enc_dec.getStatus()) {
+            write_to_host(_enc_dec.encrypt_text(data) + _delimiter);
+        }
+        else {
+            write_to_host(data + _delimiter);
+        }
         std::cout << "-> out " << make_time_string() << std::endl;
         read_from_stdin();
     }

@@ -46,8 +46,9 @@ option_code handle_options(int option_c, char* options[], string_pair_vector& op
 option_code pass_options(string_pair_vector& options_vector, tcp_client& tcp_connection) {
     std::string host;
     std::string port;
-    bool listen;
-    bool connect;
+    bool listen = false;
+    bool connect = false;
+    bool encryption = false;
     for (std::pair<std::string, std::string> option_argument : options_vector) {
         if (option_argument.first == "-l") {
             port = std::string(option_argument.second);
@@ -61,16 +62,25 @@ option_code pass_options(string_pair_vector& options_vector, tcp_client& tcp_con
             port = std::string(option_argument.second);
             connect = true;
         }
+        else if (option_argument.first == "-e") {
+            encryption = true;
+        }
     }
     //Listen mode
     if (listen == true && connect == false) {
-        tcp_connection.enable_encryption(2048);
+        if (encryption) {
+            tcp_connection.enable_encryption(2048);
+        }
+        
         tcp_connection.accept_connection(str_to_int(port));
         return option_code::success;
     }
     //Connect mode
     else if (connect == true && listen == false) {
-        tcp_connection.enable_encryption(2048);
+        if (encryption) {
+            tcp_connection.enable_encryption(2048);
+        }
+        
         tcp_connection.connect_to(host, port);
         return option_code::success;
     }

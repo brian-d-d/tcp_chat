@@ -22,6 +22,19 @@ class tcp_client {
         void connect_to(std::string_view host, std::string_view port);
             
         void accept_connection(int port);
+    
+    private:
+        boost::asio::io_context& _io_context;
+        tcp::socket _socket;
+        tcp::resolver::results_type _endpoints;
+        std::array<char, 128> _stdin_buffer;
+        boost::asio::streambuf _encrypted_socket_buffer;
+        boost::asio::posix::stream_descriptor _stdin;
+        tcp::acceptor _acceptor;
+        rsa_enc_dec _enc_dec;
+        bool _connection_status;
+        bool _their_public_key_received;
+        std::string _delimiter;
 
         void read_from_socket();
 
@@ -32,20 +45,6 @@ class tcp_client {
         std::string make_time_string();
 
         void receive_their_public_key();
-        
-    private:
-        boost::asio::io_context& _io_context;
-        tcp::socket _socket;
-        tcp::resolver::results_type _endpoints;
-        std::array<char, 128> _stdin_buffer;
-        std::array<char, 128> _socket_buffer;
-        boost::asio::streambuf _encrypted_socket_buffer;
-        boost::asio::posix::stream_descriptor _stdin;
-        tcp::acceptor _acceptor;
-        rsa_enc_dec _enc_dec;
-        bool _connection_status;
-        bool _their_public_key_received;
-        std::string _delimiter;
 
         void handle_connection(const boost::system::error_code& error);
 

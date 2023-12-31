@@ -71,7 +71,6 @@ option_code pass_options(string_pair_vector& options_vector, tcp_client& tcp_con
         if (encryption) {
             tcp_connection.enable_encryption(2048);
         }
-        
         tcp_connection.accept_connection(str_to_int(port));
         return option_code::success;
     }
@@ -80,7 +79,6 @@ option_code pass_options(string_pair_vector& options_vector, tcp_client& tcp_con
         if (encryption) {
             tcp_connection.enable_encryption(2048);
         }
-        
         tcp_connection.connect_to(host, port);
         return option_code::success;
     }

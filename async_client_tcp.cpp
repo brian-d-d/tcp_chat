@@ -20,7 +20,7 @@ void tcp_client::connect_to(std::string_view host, std::string_view port) {
     _endpoints = resolver.resolve(host, port);
     boost::asio::connect(_socket, _endpoints);
     _connection_status = true;
-    
+
     std::cout << "Connected to "  
     << _socket.remote_endpoint().address() << ":" 
     << _socket.remote_endpoint().port() 
@@ -46,7 +46,7 @@ void tcp_client::accept_connection(int port) {
 }
 
 void tcp_client::read_from_socket() {
-    boost::asio::async_read_until(_socket, _encrypted_socket_buffer, boost::regex(_delimiter), 
+    boost::asio::async_read_until(_socket, _socket_buffer, boost::regex(_delimiter), 
         std::bind(&tcp_client::handle_read_socket, this,
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred));
@@ -99,8 +99,8 @@ void tcp_client::handle_connection(const boost::system::error_code& error) {
 
 void tcp_client::handle_read_socket(const boost::system::error_code& error, std::size_t bytes_transferred) {
     if (!error) {
-        std::string data = {boost::asio::buffers_begin(_encrypted_socket_buffer.data()), 
-                            boost::asio::buffers_begin(_encrypted_socket_buffer.data()) + (bytes_transferred - _delimiter.size())};
+        std::string data = {boost::asio::buffers_begin(_socket_buffer.data()), 
+                            boost::asio::buffers_begin(_socket_buffer.data()) + (bytes_transferred - _delimiter.size())};
         if (_enc_dec.getStatus()) {
             std::string decrypted_string = _enc_dec.decrypt_text(data);
             std::cout << decrypted_string;
@@ -109,7 +109,7 @@ void tcp_client::handle_read_socket(const boost::system::error_code& error, std:
             std::cout << data;
         }
         std::cout << "<- in " << make_time_string() << std::endl;
-        _encrypted_socket_buffer.consume(bytes_transferred);
+        _socket_buffer.consume(bytes_transferred);
         
         read_from_socket();
     }

@@ -28,7 +28,7 @@ class tcp_client {
         tcp::socket _socket;
         tcp::resolver::results_type _endpoints;
         std::array<char, 128> _stdin_buffer;
-        boost::asio::streambuf _encrypted_socket_buffer;
+        boost::asio::streambuf _socket_buffer;
         boost::asio::posix::stream_descriptor _stdin;
         tcp::acceptor _acceptor;
         rsa_enc_dec _enc_dec;

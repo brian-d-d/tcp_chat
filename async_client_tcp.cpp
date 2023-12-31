@@ -133,7 +133,7 @@ void tcp_client::handle_read_stdin(const boost::system::error_code& error, std::
             write_to_host(data);
         }
         else {
-            write_to_host(data + _delimiter);
+            write_to_host(data + _delimiter.substr(1, _delimiter.size() - 1));
         }
         std::cout << "-> out " << make_time_string() << std::endl;
         read_from_stdin();

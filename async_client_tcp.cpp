@@ -7,16 +7,12 @@ tcp_client::tcp_client(boost::asio::io_context& io_context) :
     _acceptor(io_context), 
     _enc_dec(),
     _connection_status(false),
-    _their_public_key_received(false) { 
+    _their_public_key_received(false),
+    _delimiter("\r\n\r\n") { 
 }
 
 void tcp_client::enable_encryption(unsigned int key_bits) {
     _enc_dec.generate_keys(key_bits);
-
-    // std::string public_key = _enc_dec.getPublicKey();
-    // std::cout << public_key << std::endl;
-    // _enc_dec.setTheirPublicKey(public_key);
-    // std::cout << _enc_dec.getTheirPublicKey() << std::endl;
 }
 
 void tcp_client::connect_to(std::string_view host, std::string_view port) {
@@ -50,7 +46,7 @@ void tcp_client::read_from_socket() {
     //     boost::asio::placeholders::error,
     //     boost::asio::placeholders::bytes_transferred));
 
-    boost::asio::async_read_until(_socket, _encrypted_socket_buffer, boost::regex("delimiter"), 
+    boost::asio::async_read_until(_socket, _encrypted_socket_buffer, boost::regex(_delimiter), 
         std::bind(&tcp_client::handle_read_socket, this,
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred));
@@ -98,10 +94,11 @@ void tcp_client::handle_connection(const boost::system::error_code& error) {
 
 void tcp_client::handle_read_socket(const boost::system::error_code& error, std::size_t bytes_transferred) {
     if (!error) {
-        std::string data = std::string(_socket_buffer.data(), bytes_transferred - 9);
-        // std::cout << _enc_dec.getTheirPublicKey() << std::endl;
-        std::cout << _enc_dec.decrypt_text(data) << std::endl;
-        // std::cout << data << std::endl;
+        std::string data = {boost::asio::buffers_begin(_encrypted_socket_buffer.data()), 
+                            boost::asio::buffers_begin(_encrypted_socket_buffer.data()) + (bytes_transferred - _delimiter.size())};
+
+        std::string decrypted_string = _enc_dec.decrypt_text(data);
+        std::cout << decrypted_string;
         std::cout << "<- in " << make_time_string() << std::endl;
         _encrypted_socket_buffer.consume(bytes_transferred);
         
@@ -116,8 +113,7 @@ void tcp_client::handle_read_socket(const boost::system::error_code& error, std:
 void tcp_client::handle_read_stdin(const boost::system::error_code& error, std::size_t bytes_transferred) {
     std::string data = std::string(_stdin_buffer.data(), bytes_transferred);
     if (_socket.is_open()) {
-        write_to_host(_enc_dec.encrypt_text(data) + "delimiter");
-        // write_to_host(data);
+        write_to_host(_enc_dec.encrypt_text(data) + _delimiter);
         std::cout << "-> out " << make_time_string() << std::endl;
         read_from_stdin();
     }

@@ -45,6 +45,7 @@ class tcp_client {
         rsa_enc_dec _enc_dec;
         bool _connection_status;
         bool _their_public_key_received;
+        std::string _delimiter;
 
         void handle_connection(const boost::system::error_code& error);
 

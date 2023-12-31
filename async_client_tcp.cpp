@@ -20,6 +20,11 @@ void tcp_client::connect_to(std::string_view host, std::string_view port) {
     _endpoints = resolver.resolve(host, port);
     boost::asio::connect(_socket, _endpoints);
     _connection_status = true;
+    
+    std::cout << "Connected to "  
+    << _socket.remote_endpoint().address() << ":" 
+    << _socket.remote_endpoint().port() 
+    << std::endl << std::endl;
 
     if (_enc_dec.getStatus()) {
         write_to_host(_enc_dec.getPublicKey());
@@ -76,6 +81,11 @@ void tcp_client::receive_their_public_key() {
 void tcp_client::handle_connection(const boost::system::error_code& error) {
     if (_socket.is_open()) {
         _connection_status = true;
+
+        std::cout << "Connected to "  
+        << _socket.remote_endpoint().address() << ":" 
+        << _socket.remote_endpoint().port() 
+        << std::endl << std::endl;
 
         if (_enc_dec.getStatus()) {
             receive_their_public_key();

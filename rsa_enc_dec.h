@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <cassert>
 #include <cryptopp/rsa.h>
 #include <cryptopp/osrng.h>
 
@@ -18,9 +19,9 @@ class rsa_enc_dec {
 
         void generate_keys(unsigned int key_bits);
 
-        std::string encrypt_text(std::string text, CryptoPP::RSA::PublicKey& public_key);
+        std::string encrypt_text(std::string text);
 
-        std::string decrypt_text(std::string text, CryptoPP::RSA::PrivateKey& private_key);
+        std::string decrypt_text(std::string text);
 
         bool getStatus();
 

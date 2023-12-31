@@ -8,6 +8,7 @@
 #include <boost/asio.hpp>
 #include <boost/asio/posix/stream_descriptor.hpp>
 #include <boost/asio/posix/basic_descriptor.hpp>
+#include <boost/regex.hpp>
 #include "rsa_enc_dec.h"
 
 using boost::asio::ip::tcp;
@@ -30,7 +31,7 @@ class tcp_client {
 
         std::string make_time_string();
 
-        std::string receive_their_public_key();
+        void receive_their_public_key();
         
     private:
         boost::asio::io_context& _io_context;
@@ -38,6 +39,7 @@ class tcp_client {
         tcp::resolver::results_type _endpoints;
         std::array<char, 128> _stdin_buffer;
         std::array<char, 128> _socket_buffer;
+        boost::asio::streambuf _encrypted_socket_buffer;
         boost::asio::posix::stream_descriptor _stdin;
         tcp::acceptor _acceptor;
         rsa_enc_dec _enc_dec;

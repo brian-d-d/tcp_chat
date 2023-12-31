@@ -45,7 +45,12 @@ void tcp_client::accept_connection(int port) {
 }
 
 void tcp_client::read_from_socket() {
-    _socket.async_read_some(boost::asio::buffer(_socket_buffer, _socket_buffer.size()), 
+    // _socket.async_read_some(boost::asio::buffer(_socket_buffer, _socket_buffer.size()), 
+    //     std::bind(&tcp_client::handle_read_socket, this,
+    //     boost::asio::placeholders::error,
+    //     boost::asio::placeholders::bytes_transferred));
+
+    boost::asio::async_read_until(_socket, _encrypted_socket_buffer, boost::regex("delimiter"), 
         std::bind(&tcp_client::handle_read_socket, this,
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred));
@@ -69,11 +74,12 @@ std::string tcp_client::make_time_string() {
   return time;
 }
 
-std::string tcp_client::receive_their_public_key() {
+void tcp_client::receive_their_public_key() {
     boost::asio::streambuf their_public_key_streambuf;
     boost::asio::read(_socket, their_public_key_streambuf, boost::asio::transfer_exactly(key_size::rsa_2048));
-    std::string their_public_key = {boost::asio::buffers_begin(their_public_key.data()), boost::asio::buffers_end(their_public_key.data())};
-    return their_public_key;
+    std::string their_public_key = {boost::asio::buffers_begin(their_public_key_streambuf.data()), 
+                                    boost::asio::buffers_end(their_public_key_streambuf.data())};
+    _enc_dec.setTheirPublicKey(their_public_key);
 }
     
 void tcp_client::handle_connection(const boost::system::error_code& error) {
@@ -92,9 +98,12 @@ void tcp_client::handle_connection(const boost::system::error_code& error) {
 
 void tcp_client::handle_read_socket(const boost::system::error_code& error, std::size_t bytes_transferred) {
     if (!error) {
-        std::string data = std::string(_socket_buffer.data(), bytes_transferred);
-        std::cout << data;
+        std::string data = std::string(_socket_buffer.data(), bytes_transferred - 9);
+        // std::cout << _enc_dec.getTheirPublicKey() << std::endl;
+        std::cout << _enc_dec.decrypt_text(data) << std::endl;
+        // std::cout << data << std::endl;
         std::cout << "<- in " << make_time_string() << std::endl;
+        _encrypted_socket_buffer.consume(bytes_transferred);
         
         read_from_socket();
     }
@@ -107,7 +116,8 @@ void tcp_client::handle_read_socket(const boost::system::error_code& error, std:
 void tcp_client::handle_read_stdin(const boost::system::error_code& error, std::size_t bytes_transferred) {
     std::string data = std::string(_stdin_buffer.data(), bytes_transferred);
     if (_socket.is_open()) {
-        write_to_host(data);
+        write_to_host(_enc_dec.encrypt_text(data) + "delimiter");
+        // write_to_host(data);
         std::cout << "-> out " << make_time_string() << std::endl;
         read_from_stdin();
     }

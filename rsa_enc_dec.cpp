@@ -4,12 +4,14 @@ rsa_enc_dec::rsa_enc_dec() :
     _rng(),
     _private_key(),
     _public_key(),
+    _their_public_key(),
     _encryption_enabled(false) {
 }
 
 void rsa_enc_dec::generate_keys(unsigned int key_bits) {
     _private_key.GenerateRandomWithKeySize(_rng, key_bits);
     _public_key.Initialize(_private_key.GetModulus(), _private_key.GetPublicExponent());
+    _encryption_enabled = true;
 }
 
 std::string rsa_enc_dec::encrypt_text(std::string plain_text, CryptoPP::RSA::PublicKey& public_key) {
@@ -43,10 +45,18 @@ bool rsa_enc_dec::getStatus() {
 std::string rsa_enc_dec::getPublicKey() {
     std::string public_key;
     CryptoPP::StringSink sink(public_key);
-    _public_key.Save(sink);
+    _public_key.DEREncode(sink);
     return public_key;
 }
 
-void rsa_enc_dec::setStatus(bool status) {
-    _encryption_enabled = status;
+std::string rsa_enc_dec::getTheirPublicKey() {
+    std::string public_key;
+    CryptoPP::StringSink sink(public_key);
+    _their_public_key.DEREncode(sink);
+    return public_key;
+}
+
+void rsa_enc_dec::setTheirPublicKey(std::string& their_public_key) {
+    CryptoPP::StringSource source(their_public_key, true);
+    _their_public_key.Load(source);
 }

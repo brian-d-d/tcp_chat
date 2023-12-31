@@ -16,7 +16,7 @@ class tcp_client {
     public: 
         tcp_client(boost::asio::io_context& io_context);
 
-        // void enable_encryption(unsigned int key_bits);
+        void enable_encryption(unsigned int key_bits);
 
         void connect_to(std::string_view host, std::string_view port);
             
@@ -29,6 +29,8 @@ class tcp_client {
         void write_to_host(std::string line);
 
         std::string make_time_string();
+
+        std::string receive_their_public_key();
         
     private:
         boost::asio::io_context& _io_context;
@@ -38,7 +40,9 @@ class tcp_client {
         std::array<char, 128> _socket_buffer;
         boost::asio::posix::stream_descriptor _stdin;
         tcp::acceptor _acceptor;
+        rsa_enc_dec _enc_dec;
         bool _connection_status;
+        bool _their_public_key_received;
 
         void handle_connection(const boost::system::error_code& error);
 

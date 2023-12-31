@@ -25,10 +25,11 @@ void tcp_client::connect_to(std::string_view host, std::string_view port) {
     boost::asio::connect(_socket, _endpoints);
     _connection_status = true;
 
-    write_to_host(_enc_dec.getPublicKey());
-    std::cout << _enc_dec.getPublicKey() << std::endl;
-    receive_their_public_key();
-
+    if (_enc_dec.getStatus()) {
+        write_to_host(_enc_dec.getPublicKey());
+        receive_their_public_key();
+    }
+    
     read_from_socket();
     read_from_stdin();
 }
@@ -69,21 +70,21 @@ std::string tcp_client::make_time_string() {
 }
 
 std::string tcp_client::receive_their_public_key() {
-    boost::asio::streambuf their_public_key;
-    boost::asio::read(_socket, their_public_key, boost::asio::transfer_exactly(key_size::rsa_2048));
-    std::string string = {boost::asio::buffers_begin(their_public_key.data()), boost::asio::buffers_end(their_public_key.data())};
-    std::cout << string << std::endl;
-    return string;
+    boost::asio::streambuf their_public_key_streambuf;
+    boost::asio::read(_socket, their_public_key_streambuf, boost::asio::transfer_exactly(key_size::rsa_2048));
+    std::string their_public_key = {boost::asio::buffers_begin(their_public_key.data()), boost::asio::buffers_end(their_public_key.data())};
+    return their_public_key;
 }
     
 void tcp_client::handle_connection(const boost::system::error_code& error) {
     if (_socket.is_open()) {
         _connection_status = true;
 
-        receive_their_public_key();
-        std::cout << _enc_dec.getPublicKey() << std::endl;
-        write_to_host(_enc_dec.getPublicKey());
-
+        if (_enc_dec.getStatus()) {
+            receive_their_public_key();
+            write_to_host(_enc_dec.getPublicKey());
+        }
+        
         read_from_socket();
         read_from_stdin();
     }

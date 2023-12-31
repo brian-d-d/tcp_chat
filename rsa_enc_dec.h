@@ -7,6 +7,11 @@
 #include <cryptopp/rsa.h>
 #include <cryptopp/osrng.h>
 
+enum key_size {
+    rsa_2048 = 292,
+    rsa_4096 = 548
+};
+
 class rsa_enc_dec {
     public:
         rsa_enc_dec();
@@ -21,12 +26,15 @@ class rsa_enc_dec {
 
         std::string getPublicKey();
 
-        void setStatus(bool status);
+        std::string getTheirPublicKey();
+
+        void setTheirPublicKey(std::string& their_public_key);
 
     private:
         CryptoPP::AutoSeededRandomPool _rng;
         CryptoPP::RSA::PrivateKey _private_key;
         CryptoPP::RSA::PublicKey _public_key;
+        CryptoPP::RSA::PublicKey _their_public_key;
         bool _encryption_enabled;
 };
 

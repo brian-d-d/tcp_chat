@@ -82,7 +82,7 @@ void tcp_client::receive_their_public_key() {
 }
     
 void tcp_client::handle_connection(const boost::system::error_code& error) {
-    if (_socket.is_open()) {
+    if (_socket.is_open() && !error) {
         _connection_status = true;
 
         std::cout << "Connected to "  
@@ -101,7 +101,7 @@ void tcp_client::handle_connection(const boost::system::error_code& error) {
 }
 
 void tcp_client::handle_read_socket(const boost::system::error_code& error, std::size_t bytes_transferred) {
-    if (!error) {
+    if (_socket.is_open() && !error) {
         std::string data = {boost::asio::buffers_begin(_socket_buffer.data()), 
                             boost::asio::buffers_begin(_socket_buffer.data()) + (bytes_transferred - _delimiter.size())};
         if (_enc_dec.getStatus()) {
@@ -124,7 +124,7 @@ void tcp_client::handle_read_socket(const boost::system::error_code& error, std:
 
 void tcp_client::handle_read_stdin(const boost::system::error_code& error, std::size_t bytes_transferred) {
     std::string data = std::string(_stdin_buffer.data(), bytes_transferred);
-    if (_socket.is_open()) {
+    if (_socket.is_open() && !error) {
         if (_enc_dec.getStatus()) {
             write_to_host(_enc_dec.encrypt_text(data) + _delimiter);
         }

@@ -1,5 +1,5 @@
 C++ = g++
-C++FLAGS = -Wall -Werror -std=c++2b
+C++FLAGS = -Wall -Werror -Wextra -std=c++2b
 INCLUDE = include
 BUILD = build
 SRC = src

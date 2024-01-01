@@ -7,7 +7,6 @@ tcp_client::tcp_client(boost::asio::io_context& io_context) :
     _acceptor(io_context), 
     _enc_dec(),
     _connection_status(false),
-    _their_public_key_received(false),
     _delimiter("\n\r\n\r\n") { 
 }
 

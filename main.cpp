@@ -16,11 +16,11 @@ int main(int argc, char* argv[]) {
         
         string_pair_vector option_vec;
 
-        if (!handle_options(argc, argv, option_vec) == option_code::success) {
+        if ((!handle_options(argc, argv, option_vec)) == option_code::success) {
             return 1;
         }
 
-        if (!pass_options(option_vec, client) == option_code::success) {
+        if ((!pass_options(option_vec, client)) == option_code::success) {
             return 1;
         }
         

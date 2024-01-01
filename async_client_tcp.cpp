@@ -107,7 +107,7 @@ void tcp_client::handle_read_socket(const boost::system::error_code& error, std:
                             boost::asio::buffers_begin(_socket_buffer.data()) + (bytes_transferred - _delimiter.size())};
         if (_enc_dec.getStatus()) {
             std::string decrypted_string = _enc_dec.decrypt_text(data);
-            std::cout << decrypted_string << std::endl;
+            std::cout << decrypted_string;
         }
         else {
             std::cout << data << std::endl;

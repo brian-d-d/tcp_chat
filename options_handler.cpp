@@ -46,7 +46,6 @@ option_code handle_options(int option_c, char* options[], string_pair_vector& op
 option_code pass_options(string_pair_vector& options_vector, tcp_client& tcp_connection) {
     std::string host;
     std::string port;
-    std::string delimiter;
     bool listen = false;
     bool connect = false;
     bool encryption = false;

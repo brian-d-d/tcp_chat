@@ -35,7 +35,6 @@ class tcp_client {
         tcp::acceptor _acceptor;
         rsa_enc_dec _enc_dec;
         bool _connection_status;
-        bool _their_public_key_received;
         std::string _delimiter;
 
         void read_from_socket();

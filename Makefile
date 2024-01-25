@@ -17,3 +17,6 @@ build/%.o: src/%.cpp
 clean: 
 	rm -rf $(BUILD) && mkdir $(BUILD)
 
+server: 
+	$(C++) $(C++FLAGS) async_server_tcp.o async_connection_tcp.o -L $(LIB) -l cryptopp -o server
+

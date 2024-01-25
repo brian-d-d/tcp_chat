@@ -12,7 +12,7 @@ all: $(OBJS)
 	$(C++) $(C++FLAGS) $^ -L $(LIB) -l cryptopp -o async_tcp
 
 build/%.o: src/%.cpp
-	$(C++) $(C++FLAGS) -I $(INCLUDE) -c $< -o $@ 
+	$(C++) $(C++FLAGS) -I ./$(INCLUDE) -I ./$(LIB) -I ./$(LIB)/built_boost -c $< -o $@ 
 
 clean: 
 	rm -rf $(BUILD) && mkdir $(BUILD)

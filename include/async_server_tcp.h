@@ -39,7 +39,7 @@ class tcp_server {
     private:
         boost::asio::io_context& _io_context;
         tcp::acceptor _acceptor;
-        // connections_info _connections;
+        connections_info _connections;
 
         void handle_connection(const boost::system::error_code& error, std::shared_ptr<tcp_connection> connection);
 

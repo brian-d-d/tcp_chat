@@ -4,3 +4,4 @@ async_tcp
 .vscode
 .DS_Store
 lib
+server

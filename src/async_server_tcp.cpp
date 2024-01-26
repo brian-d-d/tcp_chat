@@ -4,6 +4,7 @@ tcp_server::tcp_server(boost::asio::io_context& io_context) :
     _io_context(io_context),
     _acceptor(io_context) {
     _acceptor = tcp::acceptor(_io_context, tcp::endpoint(tcp::v4(), 45000));
+    accept_connection();
 }
 
 void tcp_server::accept_connection() {
@@ -18,6 +19,7 @@ void tcp_server::handle_connection(const boost::system::error_code& error, std::
     if (!error) {
         std::cout << "New connection" << std::endl;
         connection->read_from_socket();
+        std::cout << connection->getSocket().remote_endpoint().address() << std::endl; 
         accept_connection();
     }
 }

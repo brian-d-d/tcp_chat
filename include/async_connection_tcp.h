@@ -29,6 +29,7 @@ class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
         // boost::asio::io_context& _io_context;
         tcp::socket _socket;
         boost::asio::streambuf _socket_buffer;
+        // std::array<char, 128> _socket_buffer;
 
         void handle_read_socket(const boost::system::error_code& error, std::size_t bytes_transferred);
 };

@@ -17,6 +17,9 @@ build/%.o: src/%.cpp
 clean: 
 	rm -rf $(BUILD) && mkdir $(BUILD)
 
-server: 
-	$(C++) $(C++FLAGS) async_server_tcp.o async_connection_tcp.o -L $(LIB) -l cryptopp -o server
+server_main:
+	$(C++) $(C++FLAGS) -I ./$(INCLUDE) -I ./$(LIB) -I ./$(LIB)/built_boost -c testing/main.cpp -o testing/main.o
+
+server: all server_main 
+	$(C++) $(C++FLAGS) build/async_server_tcp.o build/async_connection_tcp.o testing/main.o -L $(LIB) -l cryptopp -o testing/server
 

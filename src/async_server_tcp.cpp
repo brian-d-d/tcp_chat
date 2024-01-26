@@ -20,15 +20,14 @@ void tcp_server::accept_connection() {
 void tcp_server::handle_connection(const boost::system::error_code& error, std::shared_ptr<tcp_connection> connection) {
     if (!error) {
         _connections.connection_count++;
-        std::cout << "New connection" << std::endl;
+        std::cout << "New connection: " << connection->getSocket().remote_endpoint().address() << ":" << connection->getSocket().remote_endpoint().port() << std::endl;
         connection->read_from_socket();
         _connections.endpoints.push_back(connection->getSocket().remote_endpoint());
-        std::cout << connection->getSocket().remote_endpoint().address() << std::endl; 
         accept_connection();
 
-        std::cout << _connections.connection_count << std::endl;
-        for (boost::asio::ip::tcp::endpoint endpoint : _connections.endpoints) {
-            std::cout << endpoint.address() << std::endl;
-        }
+        // std::cout << _connections.connection_count << std::endl;
+        // for (boost::asio::ip::tcp::endpoint endpoint : _connections.endpoints) {
+        //     std::cout << endpoint.address() << std::endl;
+        // }
     }
 }

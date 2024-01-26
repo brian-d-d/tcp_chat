@@ -21,14 +21,14 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
         std::string data = {boost::asio::buffers_begin(_socket_buffer.data()), 
                             boost::asio::buffers_begin(_socket_buffer.data()) + bytes_transferred};
 
-        std::cout << data << std::endl;
+        std::cout << data;
         _socket_buffer.consume(bytes_transferred);
         read_from_socket();
     }
     else {
         std::cout << "connection closed" << std::endl;
         _connections.connection_count--;
-        
+
     }
     //close the connection if there is an error
 }

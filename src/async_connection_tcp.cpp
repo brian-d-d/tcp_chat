@@ -1,8 +1,8 @@
 #include "async_connection_tcp.h"
 
-tcp_connection::tcp_connection(boost::asio::io_context& io_context) :
-
-    _socket(io_context) {
+tcp_connection::tcp_connection(boost::asio::io_context& io_context/*, connections_info& connections*/) :
+    _socket(io_context)
+    /*_connections(connections)*/ {
 }
 
 void tcp_connection::read_from_socket() {
@@ -24,6 +24,11 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
         std::cout << data << std::endl;
         _socket_buffer.consume(bytes_transferred);
         read_from_socket();
+    }
+    else {
+        std::cout << "connection closed" << std::endl;
+        // _connections.connection_count--;
+
     }
     //close the connection if there is an error
 }

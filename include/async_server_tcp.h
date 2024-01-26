@@ -8,6 +8,7 @@
 #include "boost/asio.hpp"
 #include "boost/regex.hpp"
 #include "async_connection_tcp.h"
+#include "utils_tcp.h"
 
 using boost::asio::ip::tcp;
 
@@ -26,6 +27,9 @@ When the server receives a new client, it should create a new async_connection_t
 //write to socket
 //
 
+
+
+
 class tcp_server {
     public:
         tcp_server(boost::asio::io_context& io_context);
@@ -35,10 +39,13 @@ class tcp_server {
     private:
         boost::asio::io_context& _io_context;
         tcp::acceptor _acceptor;
+        // connections_info _connections;
 
         void handle_connection(const boost::system::error_code& error, std::shared_ptr<tcp_connection> connection);
 
 };
+
+
 
 
 

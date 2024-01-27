@@ -35,4 +35,5 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
         _connections.connection_count--;
         _server.close_connection(shared_from_this());
     }
+    //close the connection if there is an error
 }

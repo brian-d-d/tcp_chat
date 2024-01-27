@@ -31,7 +31,11 @@ void tcp_server::handle_connection(const boost::system::error_code& error, std::
     }
 }
 
-void tcp_server::close_connection() {
+void tcp_server::close_connection(std::shared_ptr<tcp_connection> connection) {
+    for (auto it = _connections.connections.begin(); it != _connections.connections.end();) {
+        *it == connection ? _connections.connections.erase(it) : ++it;
+    }
+
     for (std::shared_ptr<tcp_connection> connection : _connections.connections) {
             std::cout << connection->getSocket().remote_endpoint().address() << std::endl;
     }

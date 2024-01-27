@@ -33,7 +33,7 @@ class tcp_server {
 
         void accept_connection();
 
-        void close_connection();
+        void close_connection(std::shared_ptr<tcp_connection> connection);
 
     private:
         boost::asio::io_context& _io_context;

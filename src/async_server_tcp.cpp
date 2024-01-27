@@ -25,7 +25,16 @@ void tcp_server::handle_connection(const boost::system::error_code& error, std::
         << connection->getSocket().remote_endpoint().port() << std::endl;
 
         connection->read_from_socket();
-        _connections.endpoints.push_back(connection->getSocket().remote_endpoint());
+        _connections.connections.push_back(connection);
+
+        for (std::shared_ptr<tcp_connection> connection : _connections.connections) {
+            std::cout << connection->getSocket().remote_endpoint().address() << std::endl;
+        }
+
         accept_connection();
     }
 }
+
+// void tcp_server::temp() {
+//     std::cout << "working" << std::endl;
+// }

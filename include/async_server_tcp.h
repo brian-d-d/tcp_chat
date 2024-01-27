@@ -27,9 +27,6 @@ When the server receives a new client, it should create a new async_connection_t
 //write to socket
 //
 
-
-
-
 class tcp_server {
     public:
         tcp_server(boost::asio::io_context& io_context);

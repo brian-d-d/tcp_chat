@@ -33,6 +33,8 @@ class tcp_server {
 
         void accept_connection();
 
+        void close_connection();
+
     private:
         boost::asio::io_context& _io_context;
         tcp::acceptor _acceptor;

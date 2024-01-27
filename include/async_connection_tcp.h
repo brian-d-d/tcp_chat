@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <concepts>
 #include "boost/asio.hpp"
+#include "async_server_tcp.h"
 #include "utils_tcp.h"
 
 using boost::asio::ip::tcp;
@@ -18,9 +19,11 @@ using boost::asio::ip::tcp;
 //Async read from socket. Callback should pass the contents of the packet to the server
 //
 
+class tcp_server;
+
 class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
     public:
-        tcp_connection(boost::asio::io_context& io_context, connections_info& connections);
+        tcp_connection(boost::asio::io_context& io_context, tcp_server& server, connections_info& connections);
 
         void read_from_socket();
 
@@ -30,6 +33,7 @@ class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
 
     private:
         tcp::socket _socket;
+        tcp_server& _server;
         boost::asio::streambuf _socket_buffer;
         connections_info& _connections;
 

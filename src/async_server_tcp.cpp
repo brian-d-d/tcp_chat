@@ -9,7 +9,7 @@ tcp_server::tcp_server(boost::asio::io_context& io_context) :
 }
 
 void tcp_server::accept_connection() {
-    std::shared_ptr<tcp_connection> new_connection{std::make_shared<tcp_connection>(_io_context, _connections)};
+    std::shared_ptr<tcp_connection> new_connection{std::make_shared<tcp_connection>(_io_context, *this, _connections)};
 
     _acceptor.async_accept(new_connection->getSocket(),
         std::bind(&tcp_server::handle_connection, this,
@@ -27,14 +27,12 @@ void tcp_server::handle_connection(const boost::system::error_code& error, std::
         connection->read_from_socket();
         _connections.connections.push_back(connection);
 
-        for (std::shared_ptr<tcp_connection> connection : _connections.connections) {
-            std::cout << connection->getSocket().remote_endpoint().address() << std::endl;
-        }
-
         accept_connection();
     }
 }
 
-// void tcp_server::temp() {
-//     std::cout << "working" << std::endl;
-// }
+void tcp_server::close_connection() {
+    for (std::shared_ptr<tcp_connection> connection : _connections.connections) {
+            std::cout << connection->getSocket().remote_endpoint().address() << std::endl;
+    }
+}

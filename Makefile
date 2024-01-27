@@ -21,5 +21,5 @@ server_main:
 	$(C++) $(C++FLAGS) -I ./$(INCLUDE) -I ./$(LIB) -I ./$(LIB)/built_boost -c testing/main.cpp -o testing/main.o
 
 server: all server_main 
-	$(C++) $(C++FLAGS) build/async_server_tcp.o build/async_connection_tcp.o testing/main.o -L $(LIB) -l cryptopp -o testing/server
+	$(C++) $(C++FLAGS) build/async_server_tcp.o build/async_connection_tcp.o testing/main.o -L $(LIB) -lcryptopp -lmysqlcppconn -o testing/server
 

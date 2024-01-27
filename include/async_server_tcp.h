@@ -9,6 +9,7 @@
 #include "boost/regex.hpp"
 #include "async_connection_tcp.h"
 #include "utils_tcp.h"
+#include "mysql_connector.h"
 
 using boost::asio::ip::tcp;
 
@@ -35,10 +36,14 @@ class tcp_server {
 
         void close_connection(std::shared_ptr<tcp_connection> connection);
 
+        void connect_to_mysql(std::string hostname, std::string username, std::string password);
+
     private:
         boost::asio::io_context& _io_context;
         tcp::acceptor _acceptor;
         connections_info _connections;
+        sql::Connection *_con;
+
 
         void handle_connection(const boost::system::error_code& error, std::shared_ptr<tcp_connection> connection);
 

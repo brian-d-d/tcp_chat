@@ -3,8 +3,10 @@
 tcp_server::tcp_server(boost::asio::io_context& io_context) :
     _io_context(io_context),
     _acceptor(io_context),
-    _connections() {
+    _connections(),
+    _con() {
     _acceptor = tcp::acceptor(_io_context, tcp::endpoint(tcp::v4(), 45000));
+    connect_to_mysql("tcp://localhost:3306", "user", "password");
     accept_connection();
 }
 
@@ -39,7 +41,17 @@ void tcp_server::close_connection(std::shared_ptr<tcp_connection> connection) {
             break;
         }
         else {
-            ++it;
+            it++;
         }
+    }
+}
+
+void tcp_server::connect_to_mysql(std::string hostname, std::string username, std::string password) {
+    sql::mysql::MySQL_Driver *driver;
+    driver = sql::mysql::get_mysql_driver_instance();
+    _con = driver->connect(hostname, username, password);
+
+    if (_con->isValid()) {
+            std::cout << "Connected to database successfully" << std::endl;
     }
 }

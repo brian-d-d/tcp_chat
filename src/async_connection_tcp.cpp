@@ -12,6 +12,10 @@ void tcp_connection::read_from_socket() {
         boost::asio::placeholders::bytes_transferred));
 }
 
+void tcp_connection::write_to_host(std::string line) {
+    boost::asio::write(_socket, boost::asio::buffer(line));
+}
+
 tcp::socket& tcp_connection::getSocket() {
     return _socket;
 }
@@ -28,7 +32,6 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
     else {
         std::cout << "connection closed" << std::endl;
         _connections.connection_count--;
-
     }
     //close the connection if there is an error
 }

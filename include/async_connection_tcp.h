@@ -7,7 +7,6 @@
 #include <concepts>
 #include "boost/asio.hpp"
 #include "utils_tcp.h"
-// #include "async_server_tcp.h"
 
 using boost::asio::ip::tcp;
 
@@ -24,6 +23,8 @@ class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
         tcp_connection(boost::asio::io_context& io_context, connections_info& connections);
 
         void read_from_socket();
+
+        void write_to_host(std::string line);
 
         tcp::socket& getSocket();
 

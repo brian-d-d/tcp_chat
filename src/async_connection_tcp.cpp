@@ -3,7 +3,7 @@
 tcp_connection::tcp_connection(boost::asio::io_context& io_context, tcp_server& server, connections_info& connections) :
     _socket(io_context),
     _server(server),
-    _connections(connections) {
+    _connections_info(connections) {
 }
 
 void tcp_connection::read_from_socket() {
@@ -32,7 +32,7 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
     }
     else {
         std::cout << "connection closed" << std::endl;
-        _connections.connection_count--;
+        _connections_info.connection_count--;
         _server.close_connection(shared_from_this());
     }
     //close the connection if there is an error

@@ -31,6 +31,8 @@ class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
 
         tcp::socket& getSocket();
 
+        std::pair<std::string, std::string> split_data(std::string data);
+
     private:
         tcp::socket _socket;
         tcp_server& _server;

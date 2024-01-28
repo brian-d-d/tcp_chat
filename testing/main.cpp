@@ -11,10 +11,10 @@
 int main() {
     try {
         boost::asio::io_context io_context;
+        
         mysqlx::Session sess("localhost", 33060, "user", "password");
         mysqlx::Schema db = sess.getSchema("db");
         mysqlx::Table myTable = db.getTable("connections");
-
 
         tcp_server server(io_context, myTable);
         

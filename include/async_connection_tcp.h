@@ -36,8 +36,6 @@ class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
 
         tcp::socket& getSocket();
 
-        // void setConnection(sql::Connection *con);
-
         std::pair<std::string, std::string> split_data(std::string data);
 
     private:

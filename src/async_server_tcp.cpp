@@ -44,22 +44,3 @@ void tcp_server::close_connection(std::shared_ptr<tcp_connection> connection) {
         }
     }
 }
-
-// void tcp_server::connect_to_mysql(std::string hostname, std::string username, std::string password) {
-//     sql::mysql::MySQL_Driver *driver;
-//     driver = sql::mysql::get_mysql_driver_instance();
-//     _con = driver->connect(hostname, username, password);
-
-//     if (_con->isValid()) {
-//             std::cout << "Connected to database successfully" << std::endl;
-//     }
-// }
-
-// void tcp_server::connect_to_mysql(std::string ip, int port, std::string username, std::string password) {
-//     mysqlx::Session sess(ip, port, username, password);
-//     mysqlx::Schema db = sess.getSchema("db");
-
-        
-
-//     mysqlx::Table myTable = db.getTable("connections"); 
-// }

@@ -69,7 +69,3 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
         _server.close_connection(shared_from_this());
     }
 }
-
-// void tcp_connection::setConnection(sql::Connection *con) {
-//     _con = con;
-// }

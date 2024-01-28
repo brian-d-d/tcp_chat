@@ -6,6 +6,7 @@ tcp_server::tcp_server(boost::asio::io_context& io_context, mysqlx::Table& sqlta
     _connections(),
     _sqltable(sqltable) {
     _acceptor = tcp::acceptor(_io_context, tcp::endpoint(tcp::v4(), 45000));
+    unbind_all_accounts(_sqltable);
     accept_connection();
 }
 

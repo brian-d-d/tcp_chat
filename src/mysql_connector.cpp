@@ -37,6 +37,12 @@ void unbind_account(std::string username, mysqlx::Table& connections_table) {
                      .bind("username", username).execute();
 }
 
+void unbind_all_accounts(mysqlx::Table& connections_table) {
+    connections_table.update()
+                     .set("IP_Address", NULL)
+                     .set("Port", NULL).execute();
+}
+
 std::pair<std::string, int> get_account_endpoint(std::string username, mysqlx::Table& connections_table) {
     mysqlx::RowResult results = connections_table.select("IP_Address", "Port")
                                                  .where("Username like :username")

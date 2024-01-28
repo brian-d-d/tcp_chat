@@ -49,8 +49,10 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
         }
         else if ((data[0] - '0') == header_type::username_password) {
             username_something = split_data(data);
-            if (check_u_p(username_something.first, username_something.second, _sqltable)) {
+            if (check_account(username_something.first, username_something.second, _sqltable)) {
                 write_to_host("Correct combination\n");
+                update_account(username_something.first, _socket.remote_endpoint().address().to_string(), _socket.remote_endpoint().port(), _sqltable);
+                int temp = _socket.remote_endpoint().port();
             }
             else {
                 write_to_host("Invalid combination\n");

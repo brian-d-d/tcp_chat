@@ -25,7 +25,7 @@ tcp::socket& tcp_connection::getSocket() {
 std::pair<std::string, std::string> tcp_connection::split_data(std::string data) {
     std::pair<std::string, std::string> username_message;
     std::string::iterator message_start;
-    for (std::string::iterator it = data.begin(); it != data.end();) {
+    for (std::string::iterator it = data.begin() + header_info::header_length; it != data.end();) {
         while (*it != ':') {
             username_message.first.push_back(*it);
             it++;
@@ -42,18 +42,24 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
         std::string data = {boost::asio::buffers_begin(_socket_buffer.data()), 
                             boost::asio::buffers_begin(_socket_buffer.data()) + (bytes_transferred - 1)};
 
-        std::pair<std::string, std::string> username_message = split_data(data);
+        std::pair<std::string, std::string> username_something;
 
-        std::cout << username_message.first << " : " << username_message.second << std::endl;
+        if ((data[0] - '0') == header_type::username_message) {
+            username_something = split_data(data);
+        }
+        else if ((data[0] - '0') == header_type::username_password) {
+            username_something = split_data(data);
+            if (check_u_p(username_something.first, username_something.second, _con)) {
+                write_to_host("Correct combination\n");
+            }
+            else {
+                write_to_host("Invalid combination\n");
+                _socket.close();
+            }
+        }
 
-        if (check_u_p(username_message.first, username_message.second, _con)) {
-            write_to_host("Correct combination\n");
-        }
-        else {
-            write_to_host("Invalid combination\n");
-            _socket.close();
-        }
-        
+        std::cout << username_something.first << " : " << username_something.second << std::endl;
+
         _socket_buffer.consume(bytes_transferred);
         read_from_socket();
     }

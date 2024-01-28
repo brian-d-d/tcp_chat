@@ -9,7 +9,7 @@ enum header_info : char {
 enum header_type : char {
     username_message = 0,
     username_password = 1,
-    create_account = 2
+    new_username_password = 2
 };
 
 #endif

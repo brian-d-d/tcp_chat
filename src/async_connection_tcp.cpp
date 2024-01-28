@@ -59,6 +59,10 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
                 _socket.close();
             }
         }
+        else if ((data[0] - '0') == header_type::new_username_password) {
+            username_something = split_data(data);
+            create_account(username_something.first, username_something.second, _sqltable);
+        }
 
         std::cout << username_something.first << " : " << username_something.second << std::endl;
 

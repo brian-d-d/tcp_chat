@@ -12,4 +12,6 @@ int check_account(std::string username, std::string password, mysqlx::Table& con
 
 void update_account(std::string username, std::string ip_addr, int port, mysqlx::Table& connections_table);
 
+void create_account(std::string username, std::string password, mysqlx::Table& connections_table);
+
 #endif

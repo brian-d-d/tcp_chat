@@ -15,34 +15,6 @@ int check_account(std::string username, std::string password, mysqlx::Table& con
     }
 }
 
-void update_account(std::string username, std::string ip_addr, int port, mysqlx::Table& connections_table) {
-    connections_table.update()
-                     .set("IP_Address", ip_addr)
-                     .set("Port", port)
-                     .where("Username like :username")
-                     .bind("username", username).execute();
-}
-
-void create_account(std::string username, std::string password, mysqlx::Table& connections_table) {
-    connections_table.insert("Username", "Password")
-                     .values(username, password)
-                     .execute();            
-}
-
-void unbind_account(std::string username, mysqlx::Table& connections_table) {
-    connections_table.update()
-                     .set("IP_Address", NULL)
-                     .set("Port", NULL)
-                     .where("Username like :username")
-                     .bind("username", username).execute();
-}
-
-void unbind_all_accounts(mysqlx::Table& connections_table) {
-    connections_table.update()
-                     .set("IP_Address", NULL)
-                     .set("Port", NULL).execute();
-}
-
 std::pair<std::string, int> get_account_endpoint(std::string username, mysqlx::Table& connections_table) {
     mysqlx::RowResult results = connections_table.select("IP_Address", "Port")
                                                  .where("Username like :username")
@@ -58,4 +30,32 @@ std::pair<std::string, int> get_account_endpoint(std::string username, mysqlx::T
     std::cout << ip_port.first << " : " << ip_port.second << std::endl;
 
     return ip_port;
+}
+
+void create_account(std::string username, std::string password, mysqlx::Table& connections_table) {
+    connections_table.insert("Username", "Password")
+                     .values(username, password).execute();            
+}
+
+
+void bind_account(std::string username, std::string ip_addr, int port, mysqlx::Table& connections_table) {
+    connections_table.update()
+                     .set("IP_Address", ip_addr)
+                     .set("Port", port)
+                     .where("Username like :username")
+                     .bind("username", username).execute();
+}
+
+void unbind_account(std::string username, mysqlx::Table& connections_table) {
+    connections_table.update()
+                     .set("IP_Address", NULL)
+                     .set("Port", NULL)
+                     .where("Username like :username")
+                     .bind("username", username).execute();
+}
+
+void unbind_all_accounts(mysqlx::Table& connections_table) {
+    connections_table.update()
+                     .set("IP_Address", NULL)
+                     .set("Port", NULL).execute();
 }

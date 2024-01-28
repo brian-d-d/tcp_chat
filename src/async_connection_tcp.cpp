@@ -45,7 +45,6 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
         std::pair<std::string, std::string> username_something;
 
         if ((data[0] - '0') == header_type::username_message) {
-            get_account_endpoint("test", _sqltable);
             username_something = split_data(data);
         }
         else if ((data[0] - '0') == header_type::username_password) {
@@ -53,6 +52,7 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
             if (check_account(username_something.first, username_something.second, _sqltable)) {
                 write_to_host("Correct combination\n");
                 update_account(username_something.first, _socket.remote_endpoint().address().to_string(), _socket.remote_endpoint().port(), _sqltable);
+                _username = username_something.first;
                 int temp = _socket.remote_endpoint().port();
             }
             else {
@@ -75,4 +75,8 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
         _connections_info.connection_count--;
         _server.close_connection(shared_from_this());
     }
+}
+
+std::string tcp_connection::getUsername() {
+    return _username;
 }

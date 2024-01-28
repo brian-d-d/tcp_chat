@@ -36,6 +36,8 @@ class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
 
         tcp::socket& getSocket();
 
+        std::string getUsername();
+
         std::pair<std::string, std::string> split_data(std::string data);
 
     private:
@@ -44,6 +46,7 @@ class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
         boost::asio::streambuf _socket_buffer;
         connections_info& _connections_info;
         mysqlx::Table& _sqltable;
+        std::string _username;
 
         void handle_read_socket(const boost::system::error_code& error, std::size_t bytes_transferred);
 };

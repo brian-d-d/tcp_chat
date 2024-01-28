@@ -47,13 +47,13 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
         std::cout << username_message.first << " : " << username_message.second << std::endl;
 
         if (check_u_p(username_message.first, username_message.second, _con)) {
-            std::cout << "Correct combination" << std::endl;
+            write_to_host("Correct combination\n");
         }
         else {
-            std::cout << "Invalid combination" << std::endl;
+            write_to_host("Invalid combination\n");
+            _socket.close();
         }
         
-
         _socket_buffer.consume(bytes_transferred);
         read_from_socket();
     }

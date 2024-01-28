@@ -23,13 +23,16 @@ int check_u_p(std::string username, std::string password, sql::Connection *con) 
 
     while (res->next()) {
         if (res->isNull("Username") || res->isNull("Password")) {
+            delete stmt, res;
             return false;
         }
         else {
             // std::cout << res->getString("Username") << std::endl;
             // std::cout << res->getString("Password") << std::endl;
+            delete stmt, res;
             return true;
         }
     }
+    delete stmt, res;
     return false;
 }

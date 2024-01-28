@@ -45,6 +45,7 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
         std::pair<std::string, std::string> username_something;
 
         if ((data[0] - '0') == header_type::username_message) {
+            get_account_endpoint("test", _sqltable);
             username_something = split_data(data);
         }
         else if ((data[0] - '0') == header_type::username_password) {

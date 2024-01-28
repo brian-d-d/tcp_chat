@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 
+#include "boost/asio.hpp"
 #include <connecter_cpp/mysqlx/xdevapi.h>
 
 int check_account(std::string username, std::string password, mysqlx::Table& connections_table);
@@ -13,5 +14,9 @@ int check_account(std::string username, std::string password, mysqlx::Table& con
 void update_account(std::string username, std::string ip_addr, int port, mysqlx::Table& connections_table);
 
 void create_account(std::string username, std::string password, mysqlx::Table& connections_table);
+
+void unbind_account(std::string username, mysqlx::Table& connections_table);
+
+std::pair<std::string, int> get_account_endpoint(std::string username, mysqlx::Table& connections_table);
 
 #endif

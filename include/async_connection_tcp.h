@@ -12,6 +12,8 @@
 #include "mysql_connector.h"
 #include "header_tcp.h"
 
+#include <connecter_cpp/mysqlx/xdevapi.h>
+
 using boost::asio::ip::tcp;
 
 //This will need the enable_shared_from_this thing
@@ -26,7 +28,7 @@ class tcp_server;
 
 class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
     public:
-        tcp_connection(boost::asio::io_context& io_context, tcp_server& server, connections_info& connections);
+        tcp_connection(boost::asio::io_context& io_context, tcp_server& server, connections_info& connections, mysqlx::Table& sqltable);
 
         void read_from_socket();
 
@@ -34,7 +36,7 @@ class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
 
         tcp::socket& getSocket();
 
-        void setConnection(sql::Connection *con);
+        // void setConnection(sql::Connection *con);
 
         std::pair<std::string, std::string> split_data(std::string data);
 
@@ -43,7 +45,7 @@ class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
         tcp_server& _server;
         boost::asio::streambuf _socket_buffer;
         connections_info& _connections_info;
-        sql::Connection *_con;
+        mysqlx::Table& _sqltable;
 
         void handle_read_socket(const boost::system::error_code& error, std::size_t bytes_transferred);
 };

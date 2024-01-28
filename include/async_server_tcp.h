@@ -11,6 +11,8 @@
 #include "utils_tcp.h"
 #include "mysql_connector.h"
 
+#include <connecter_cpp/mysqlx/xdevapi.h>
+
 using boost::asio::ip::tcp;
 
 /*
@@ -30,19 +32,19 @@ When the server receives a new client, it should create a new async_connection_t
 
 class tcp_server {
     public:
-        tcp_server(boost::asio::io_context& io_context);
+        tcp_server(boost::asio::io_context& io_context, mysqlx::Table& sqltable);
 
         void accept_connection();
 
         void close_connection(std::shared_ptr<tcp_connection> connection);
 
-        void connect_to_mysql(std::string hostname, std::string username, std::string password);
+        // void connect_to_mysql(std::string ip, int port, std::string username, std::string password);
 
     private:
         boost::asio::io_context& _io_context;
         tcp::acceptor _acceptor;
         connections_info _connections;
-        sql::Connection *_con;
+        mysqlx::Table& _sqltable;
 
         void handle_connection(const boost::system::error_code& error, std::shared_ptr<tcp_connection> connection);
 

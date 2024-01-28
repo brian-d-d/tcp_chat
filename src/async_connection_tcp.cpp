@@ -1,10 +1,10 @@
 #include "async_connection_tcp.h"
 
-tcp_connection::tcp_connection(boost::asio::io_context& io_context, tcp_server& server, connections_info& connections) :
+tcp_connection::tcp_connection(boost::asio::io_context& io_context, tcp_server& server, connections_info& connections, mysqlx::Table& sqltable) :
     _socket(io_context),
     _server(server),
     _connections_info(connections),
-    _con() {
+    _sqltable(sqltable) {
 }
 
 void tcp_connection::read_from_socket() {
@@ -49,7 +49,7 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
         }
         else if ((data[0] - '0') == header_type::username_password) {
             username_something = split_data(data);
-            if (check_u_p(username_something.first, username_something.second, _con)) {
+            if (check_u_p(username_something.first, username_something.second, _sqltable)) {
                 write_to_host("Correct combination\n");
             }
             else {
@@ -70,6 +70,6 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
     }
 }
 
-void tcp_connection::setConnection(sql::Connection *con) {
-    _con = con;
-}
+// void tcp_connection::setConnection(sql::Connection *con) {
+//     _con = con;
+// }

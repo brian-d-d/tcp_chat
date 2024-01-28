@@ -1,19 +1,16 @@
 #include "async_server_tcp.h"
 
-tcp_server::tcp_server(boost::asio::io_context& io_context) :
+tcp_server::tcp_server(boost::asio::io_context& io_context, mysqlx::Table& sqltable) :
     _io_context(io_context),
     _acceptor(io_context),
     _connections(),
-    _con() {
+    _sqltable(sqltable) {
     _acceptor = tcp::acceptor(_io_context, tcp::endpoint(tcp::v4(), 45000));
-    connect_to_mysql("tcp://localhost:3306", "user", "password");
     accept_connection();
 }
 
 void tcp_server::accept_connection() {
-    std::shared_ptr<tcp_connection> new_connection{std::make_shared<tcp_connection>(_io_context, *this, _connections)};
-
-    new_connection->setConnection(_con);
+    std::shared_ptr<tcp_connection> new_connection{std::make_shared<tcp_connection>(_io_context, *this, _connections, _sqltable)};
 
     _acceptor.async_accept(new_connection->getSocket(),
         std::bind(&tcp_server::handle_connection, this,
@@ -48,12 +45,21 @@ void tcp_server::close_connection(std::shared_ptr<tcp_connection> connection) {
     }
 }
 
-void tcp_server::connect_to_mysql(std::string hostname, std::string username, std::string password) {
-    sql::mysql::MySQL_Driver *driver;
-    driver = sql::mysql::get_mysql_driver_instance();
-    _con = driver->connect(hostname, username, password);
+// void tcp_server::connect_to_mysql(std::string hostname, std::string username, std::string password) {
+//     sql::mysql::MySQL_Driver *driver;
+//     driver = sql::mysql::get_mysql_driver_instance();
+//     _con = driver->connect(hostname, username, password);
 
-    if (_con->isValid()) {
-            std::cout << "Connected to database successfully" << std::endl;
-    }
-}
+//     if (_con->isValid()) {
+//             std::cout << "Connected to database successfully" << std::endl;
+//     }
+// }
+
+// void tcp_server::connect_to_mysql(std::string ip, int port, std::string username, std::string password) {
+//     mysqlx::Session sess(ip, port, username, password);
+//     mysqlx::Schema db = sess.getSchema("db");
+
+        
+
+//     mysqlx::Table myTable = db.getTable("connections"); 
+// }

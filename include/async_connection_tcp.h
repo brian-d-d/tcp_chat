@@ -8,6 +8,7 @@
 #include "boost/asio.hpp"
 #include "async_server_tcp.h"
 #include "utils_tcp.h"
+#include "mysql_connector.h"
 
 using boost::asio::ip::tcp;
 
@@ -31,6 +32,8 @@ class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
 
         tcp::socket& getSocket();
 
+        void setConnection(sql::Connection *con);
+
         std::pair<std::string, std::string> split_data(std::string data);
 
     private:
@@ -38,6 +41,7 @@ class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
         tcp_server& _server;
         boost::asio::streambuf _socket_buffer;
         connections_info& _connections_info;
+        sql::Connection *_con;
 
         void handle_read_socket(const boost::system::error_code& error, std::size_t bytes_transferred);
 };

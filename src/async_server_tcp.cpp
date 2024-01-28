@@ -13,6 +13,8 @@ tcp_server::tcp_server(boost::asio::io_context& io_context) :
 void tcp_server::accept_connection() {
     std::shared_ptr<tcp_connection> new_connection{std::make_shared<tcp_connection>(_io_context, *this, _connections)};
 
+    new_connection->setConnection(_con);
+
     _acceptor.async_accept(new_connection->getSocket(),
         std::bind(&tcp_server::handle_connection, this,
         boost::asio::placeholders::error, new_connection));

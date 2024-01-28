@@ -3,7 +3,8 @@
 tcp_connection::tcp_connection(boost::asio::io_context& io_context, tcp_server& server, connections_info& connections) :
     _socket(io_context),
     _server(server),
-    _connections_info(connections) {
+    _connections_info(connections),
+    _con() {
 }
 
 void tcp_connection::read_from_socket() {
@@ -39,11 +40,19 @@ std::pair<std::string, std::string> tcp_connection::split_data(std::string data)
 void tcp_connection::handle_read_socket(const boost::system::error_code& error, std::size_t bytes_transferred) {
     if (!error) {
         std::string data = {boost::asio::buffers_begin(_socket_buffer.data()), 
-                            boost::asio::buffers_begin(_socket_buffer.data()) + bytes_transferred};
+                            boost::asio::buffers_begin(_socket_buffer.data()) + (bytes_transferred - 1)};
 
         std::pair<std::string, std::string> username_message = split_data(data);
 
-        std::cout << username_message.first << " : " << username_message.second;
+        std::cout << username_message.first << " : " << username_message.second << std::endl;
+
+        if (check_u_p(username_message.first, username_message.second, _con)) {
+            std::cout << "Correct combination" << std::endl;
+        }
+        else {
+            std::cout << "Invalid combination" << std::endl;
+        }
+        
 
         _socket_buffer.consume(bytes_transferred);
         read_from_socket();
@@ -53,4 +62,8 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
         _connections_info.connection_count--;
         _server.close_connection(shared_from_this());
     }
+}
+
+void tcp_connection::setConnection(sql::Connection *con) {
+    _con = con;
 }

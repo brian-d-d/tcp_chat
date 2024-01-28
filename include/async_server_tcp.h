@@ -44,7 +44,6 @@ class tcp_server {
         connections_info _connections;
         sql::Connection *_con;
 
-
         void handle_connection(const boost::system::error_code& error, std::shared_ptr<tcp_connection> connection);
 
 };

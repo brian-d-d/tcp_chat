@@ -1,3 +1,6 @@
+#ifndef __MYSQL_CONNECTOR_H
+#define __MYSQL_CONNECTOR_H
+
 /* Standard C++ includes */
 #include <stdlib.h>
 #include <iostream>
@@ -16,3 +19,6 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 
+int check_u_p(std::string username, std::string password, sql::Connection *con);
+
+#endif

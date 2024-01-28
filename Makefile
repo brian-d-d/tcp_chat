@@ -9,7 +9,7 @@ SRCS := $(wildcard src/*.cpp)
 OBJS := $(patsubst src/%.cpp, build/%.o,$(SRCS))
 
 all: $(OBJS)
-	$(C++) $(C++FLAGS) $^ -L $(LIB) -l cryptopp -o async_tcp
+	$(C++) $(C++FLAGS) $^ -L $(LIB) -lcryptopp -lmysqlcppconn -o async_tcp
 
 build/%.o: src/%.cpp
 	$(C++) $(C++FLAGS) -I ./$(INCLUDE) -I ./$(LIB) -I ./$(LIB)/built_boost -c $< -o $@ 
@@ -21,5 +21,5 @@ server_main:
 	$(C++) $(C++FLAGS) -I ./$(INCLUDE) -I ./$(LIB) -I ./$(LIB)/built_boost -c testing/main.cpp -o testing/main.o
 
 server: all server_main 
-	$(C++) $(C++FLAGS) build/async_server_tcp.o build/async_connection_tcp.o testing/main.o -L $(LIB) -lcryptopp -lmysqlcppconn -o testing/server
+	$(C++) $(C++FLAGS) build/async_server_tcp.o build/async_connection_tcp.o build/mysql_connector.o testing/main.o -L $(LIB) -lcryptopp -lmysqlcppconn -o testing/server
 

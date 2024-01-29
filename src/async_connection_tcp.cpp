@@ -42,35 +42,7 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
         std::string data = {boost::asio::buffers_begin(_socket_buffer.data()), 
                             boost::asio::buffers_begin(_socket_buffer.data()) + (bytes_transferred - 1)};
 
-        std::pair<std::string, std::string> username_something;
-
-        if ((data[0] - '0') == header_type::username_message) {
-            username_something = split_data(data);
-        }
-        else if ((data[0] - '0') == header_type::username_password) {
-            username_something = split_data(data);
-            if (check_account(username_something.first, username_something.second, _sqltable)) {
-                write_to_host("Correct combination\n");
-                bind_account(username_something.first, _socket.remote_endpoint().address().to_string(), _socket.remote_endpoint().port(), _sqltable);
-                _username = username_something.first;
-            }
-            else {
-                write_to_host("Invalid combination\n");
-                _socket.close();
-            }
-        }
-        else if ((data[0] - '0') == header_type::new_username_password) {
-            username_something = split_data(data);
-            if (create_account(username_something.first, username_something.second, _sqltable)) {
-                write_to_host("Account created"\n);
-            }
-            else {
-                write_to_host("Username in use\n");
-            }
-        }
-
-        std::cout << username_something.first << " : " << username_something.second << std::endl;
-
+        handle_data(data);
         _socket_buffer.consume(bytes_transferred);
         read_from_socket();
     }
@@ -79,6 +51,56 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
         _connections_info.connection_count--;
         _server.close_connection(shared_from_this());
     }
+}
+
+void tcp_connection::handle_data(std::string data) {
+    std::pair<std::string, std::string> username_something = split_data(data);
+
+    if ((data[0] - '0') == header_type::username_message) {
+    }
+    else if ((data[0] - '0') == header_type::username_password) {
+        if (check_login_details(username_something.first, username_something.second, _sqltable)) {
+            write_to_host("Correct combination\n");
+            bind_account(username_something.first, _socket.remote_endpoint().address().to_string(), _socket.remote_endpoint().port(), _sqltable);
+            _username = username_something.first;
+        }
+        else {
+            write_to_host("Invalid combination\n");
+            _socket.close();
+        }
+    }
+    else if ((data[0] - '0') == header_type::new_username_password) {
+        if (create_account(username_something.first, username_something.second, _sqltable)) {
+            write_to_host("Account created\n");
+        }
+        else {
+            write_to_host("Username in use\n");
+        }
+    }
+    else if ((data[0] - '0') == header_type::sign_out) {
+        if (_username != "") {
+            unbind_account(_username, _sqltable);
+            _username = "";
+            write_to_host("Signed out\n");
+        }
+        else {
+            write_to_host("Not signed in\n");
+        }
+
+    }
+    else if ((data[0] - '0') == header_type::remove_account) {
+        if (_username == username_something.first) {
+            delete_account(username_something.first, _sqltable);
+            _username = "";
+            write_to_host("Account deleted\n");
+        }
+        else {
+            write_to_host("Cannot delete account\n");
+        }
+    }
+
+    std::cout << username_something.first << " : " << username_something.second << std::endl;
+
 }
 
 std::string tcp_connection::getUsername() {

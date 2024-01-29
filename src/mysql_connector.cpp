@@ -1,6 +1,6 @@
 #include "mysql_connector.h"
 
-int check_account(std::string username, std::string password, mysqlx::Table& connections_table) {
+int check_login_details(std::string username, std::string password, mysqlx::Table& connections_table) {
     mysqlx::RowResult results = connections_table.select("Username", "Password")
                                                  .where("Username like :username AND Password like :password")
                                                  .bind("username", username).bind("password", password).execute();
@@ -67,4 +67,10 @@ void unbind_all_accounts(mysqlx::Table& connections_table) {
     connections_table.update()
                      .set("IP_Address", NULL)
                      .set("Port", NULL).execute();
+}
+
+void delete_account(std::string username, mysqlx::Table& connections_table) {
+    connections_table.remove()
+                     .where("Username like :username")
+                     .bind("username", username).execute();
 }

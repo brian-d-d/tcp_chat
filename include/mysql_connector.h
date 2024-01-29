@@ -17,7 +17,7 @@ void bind_account(std::string username, std::string ip_addr, int port, mysqlx::T
 
 void unbind_account(std::string username, mysqlx::Table& connections_table);
 
-void create_account(std::string username, std::string password, mysqlx::Table& connections_table);
+int create_account(std::string username, std::string password, mysqlx::Table& connections_table);
 
 void unbind_all_accounts(mysqlx::Table& connections_table);
 

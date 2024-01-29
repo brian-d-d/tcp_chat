@@ -32,11 +32,20 @@ std::pair<std::string, int> get_account_endpoint(std::string username, mysqlx::T
     return ip_port;
 }
 
-void create_account(std::string username, std::string password, mysqlx::Table& connections_table) {
-    connections_table.insert("Username", "Password")
-                     .values(username, password).execute();            
-}
+int create_account(std::string username, std::string password, mysqlx::Table& connections_table) {
+    mysqlx::RowResult results = connections_table.select("Username")
+                                                 .where("Username like :username")
+                                                 .bind("username", username).execute();
 
+    mysqlx::Row row = results.fetchOne();
+        
+    if (row.isNull()) {
+        connections_table.insert("Username", "Password")
+                         .values(username, password).execute(); 
+        return true;   
+    }            
+    return false;
+}
 
 void bind_account(std::string username, std::string ip_addr, int port, mysqlx::Table& connections_table) {
     connections_table.update()

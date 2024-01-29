@@ -11,8 +11,9 @@
 int main() {
     try {
         boost::asio::io_context io_context;
-        
+
         mysqlx::Session sess("localhost", 33060, "user", "password");
+        std::cout << "Connected to database" << std::endl;
         mysqlx::Schema db = sess.getSchema("db");
         mysqlx::Table myTable = db.getTable("connections");
 

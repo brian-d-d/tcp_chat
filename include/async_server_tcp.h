@@ -38,6 +38,8 @@ class tcp_server {
 
         void close_connection(std::shared_ptr<tcp_connection> connection);
 
+        void write_to_client(std::string data, std::string username, boost::asio::ip::basic_endpoint<tcp> destination_endpoint);
+
     private:
         boost::asio::io_context& _io_context;
         tcp::acceptor _acceptor;

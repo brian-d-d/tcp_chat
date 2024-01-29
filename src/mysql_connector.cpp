@@ -16,18 +16,23 @@ int check_login_details(std::string username, std::string password, mysqlx::Tabl
 }
 
 std::pair<std::string, int> get_account_endpoint(std::string username, mysqlx::Table& connections_table) {
-    mysqlx::RowResult results = connections_table.select("IP_Address", "Port")
+    mysqlx::RowResult results = connections_table.select("IP_Address", "Port", "Logged_In")
                                                  .where("Username like :username")
                                                  .bind("username", username).execute();
 
     mysqlx::Row row = results.fetchOne();
-    std::pair<std::string, int> ip_port;
-    
-    ip_port.second = row[1];
-    mysqlx::string str = row[0].get<mysqlx::string>();
-    ip_port.first = str;
 
-    std::cout << ip_port.first << " : " << ip_port.second << std::endl;
+    std::pair<std::string, int> ip_port;
+
+    if (row.isNull() || (row.getBytes(2)).first[0] == false) {
+        ip_port.first = "NULL";
+    }
+    else {
+        ip_port.second = row[1];
+        mysqlx::string str = row[0].get<mysqlx::string>();
+        ip_port.first = str;
+        std::cout << ip_port.first << " : " << ip_port.second << std::endl;
+    }
 
     return ip_port;
 }
@@ -51,6 +56,7 @@ void bind_account(std::string username, std::string ip_addr, int port, mysqlx::T
     connections_table.update()
                      .set("IP_Address", ip_addr)
                      .set("Port", port)
+                     .set("Logged_In", true)
                      .where("Username like :username")
                      .bind("username", username).execute();
 }
@@ -59,6 +65,7 @@ void unbind_account(std::string username, mysqlx::Table& connections_table) {
     connections_table.update()
                      .set("IP_Address", NULL)
                      .set("Port", NULL)
+                     .set("Logged_In", false)
                      .where("Username like :username")
                      .bind("username", username).execute();
 }
@@ -66,7 +73,8 @@ void unbind_account(std::string username, mysqlx::Table& connections_table) {
 void unbind_all_accounts(mysqlx::Table& connections_table) {
     connections_table.update()
                      .set("IP_Address", NULL)
-                     .set("Port", NULL).execute();
+                     .set("Port", NULL)
+                     .set("Logged_In", false).execute();
 }
 
 void delete_account(std::string username, mysqlx::Table& connections_table) {

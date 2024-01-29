@@ -46,3 +46,17 @@ void tcp_server::close_connection(std::shared_ptr<tcp_connection> connection) {
         }
     }
 }
+
+void tcp_server::write_to_client(std::string data, std::string username, boost::asio::ip::basic_endpoint<tcp> destination_endpoint) {
+    for (auto it = _connections.connections.begin(); it != _connections.connections.end();) {
+        std::shared_ptr<tcp_connection> connection = *it;
+        if (connection->getSocket().remote_endpoint() == destination_endpoint) {
+            std::cout << "Forwarded" << std::endl;
+            connection->write_to_client(username + ':' + data + '\n');
+            break;
+        }
+        else {
+            it++;
+        }
+    }
+}

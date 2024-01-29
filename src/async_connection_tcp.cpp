@@ -57,7 +57,16 @@ void tcp_connection::handle_data(std::string data) {
     std::pair<std::string, std::string> username_something = split_data(data);
 
     if ((data[0] - '0') == header_type::username_message_) {
-        
+        std::pair<std::string, int> destination_endpoint_pair = get_account_endpoint(username_something.first, _sqltable);
+
+        if (destination_endpoint_pair.first == "NULL") {
+            write_to_client("No one with this username is online\n");
+        }
+        else {
+            boost::asio::ip::address_v4 ip_addr = boost::asio::ip::make_address_v4(destination_endpoint_pair.first);
+            boost::asio::ip::basic_endpoint<tcp> destination_endpoint(ip_addr, destination_endpoint_pair.second);
+            _server.write_to_client(username_something.second, _username, destination_endpoint);
+        }
     }
     else if ((data[0] - '0') == header_type::username_password_) {
         if (check_login_details(username_something.first, username_something.second, _sqltable)) {

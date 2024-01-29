@@ -2,11 +2,12 @@
 #define __HEADER_TCP_H
 
 enum header_type : char {
-    username_message = 0,
-    username_password = 1,
-    new_username_password = 2,
-    sign_out = 3,
-    remove_account = 4
+    username_message_ = 0,
+    username_password_ = 1,
+    new_username_password_ = 2,
+    sign_out_ = 3,
+    delete_account_ = 4,
+    change_password_ = 5
 };
 
 enum header_info : char {

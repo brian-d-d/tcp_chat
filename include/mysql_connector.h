@@ -23,4 +23,6 @@ void unbind_all_accounts(mysqlx::Table& connections_table);
 
 void delete_account(std::string username, mysqlx::Table& connections_table);
 
+void change_password(std::string username, std::string password, mysqlx::Table& connections_table);
+
 #endif

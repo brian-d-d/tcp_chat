@@ -56,9 +56,9 @@ void tcp_connection::handle_read_socket(const boost::system::error_code& error, 
 void tcp_connection::handle_data(std::string data) {
     std::pair<std::string, std::string> username_something = split_data(data);
 
-    if ((data[0] - '0') == header_type::username_message) {
+    if ((data[0] - '0') == header_type::username_message_) {
     }
-    else if ((data[0] - '0') == header_type::username_password) {
+    else if ((data[0] - '0') == header_type::username_password_) {
         if (check_login_details(username_something.first, username_something.second, _sqltable)) {
             write_to_host("Correct combination\n");
             bind_account(username_something.first, _socket.remote_endpoint().address().to_string(), _socket.remote_endpoint().port(), _sqltable);
@@ -69,7 +69,7 @@ void tcp_connection::handle_data(std::string data) {
             _socket.close();
         }
     }
-    else if ((data[0] - '0') == header_type::new_username_password) {
+    else if ((data[0] - '0') == header_type::new_username_password_) {
         if (create_account(username_something.first, username_something.second, _sqltable)) {
             write_to_host("Account created\n");
         }
@@ -77,7 +77,7 @@ void tcp_connection::handle_data(std::string data) {
             write_to_host("Username in use\n");
         }
     }
-    else if ((data[0] - '0') == header_type::sign_out) {
+    else if ((data[0] - '0') == header_type::sign_out_) {
         if (_username != "") {
             unbind_account(_username, _sqltable);
             _username = "";
@@ -88,7 +88,16 @@ void tcp_connection::handle_data(std::string data) {
         }
 
     }
-    else if ((data[0] - '0') == header_type::remove_account) {
+    else if ((data[0] - '0') == header_type::change_password_) {
+        if (_username == username_something.first) {
+            change_password(username_something.first, username_something.second, _sqltable);
+            write_to_host("Password changed\n");
+        }
+        else {
+            write_to_host("You are not signed in");
+        }
+    }
+    else if ((data[0] - '0') == header_type::delete_account_) {
         if (_username == username_something.first) {
             delete_account(username_something.first, _sqltable);
             _username = "";

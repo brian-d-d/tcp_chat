@@ -74,3 +74,10 @@ void delete_account(std::string username, mysqlx::Table& connections_table) {
                      .where("Username like :username")
                      .bind("username", username).execute();
 }
+
+void change_password(std::string username, std::string password, mysqlx::Table& connections_table) {
+    connections_table.update()
+                     .set("Password", password)
+                     .where("Username like :username")
+                     .bind("username", username).execute();
+}

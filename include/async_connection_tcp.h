@@ -32,7 +32,7 @@ class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
 
         void read_from_socket();
 
-        void write_to_host(std::string line);
+        void write_to_client(std::string line);
 
         tcp::socket& getSocket();
 

@@ -14,7 +14,7 @@ void tcp_connection::read_from_socket() {
         boost::asio::placeholders::bytes_transferred));
 }
 
-void tcp_connection::write_to_host(std::string line) {
+void tcp_connection::write_to_client(std::string line) {
     boost::asio::write(_socket, boost::asio::buffer(line));
 }
 
@@ -57,54 +57,54 @@ void tcp_connection::handle_data(std::string data) {
     std::pair<std::string, std::string> username_something = split_data(data);
 
     if ((data[0] - '0') == header_type::username_message_) {
+        
     }
     else if ((data[0] - '0') == header_type::username_password_) {
         if (check_login_details(username_something.first, username_something.second, _sqltable)) {
-            write_to_host("Correct combination\n");
+            write_to_client("Correct combination\n");
             bind_account(username_something.first, _socket.remote_endpoint().address().to_string(), _socket.remote_endpoint().port(), _sqltable);
             _username = username_something.first;
         }
         else {
-            write_to_host("Invalid combination\n");
-            _socket.close();
+            write_to_client("Invalid combination\n");
         }
     }
     else if ((data[0] - '0') == header_type::new_username_password_) {
         if (create_account(username_something.first, username_something.second, _sqltable)) {
-            write_to_host("Account created\n");
+            write_to_client("Account created\n");
         }
         else {
-            write_to_host("Username in use\n");
+            write_to_client("Username in use\n");
         }
     }
     else if ((data[0] - '0') == header_type::sign_out_) {
         if (_username != "") {
             unbind_account(_username, _sqltable);
             _username = "";
-            write_to_host("Signed out\n");
+            write_to_client("Signed out\n");
         }
         else {
-            write_to_host("Not signed in\n");
+            write_to_client("Not signed in\n");
         }
 
     }
     else if ((data[0] - '0') == header_type::change_password_) {
         if (_username == username_something.first) {
             change_password(username_something.first, username_something.second, _sqltable);
-            write_to_host("Password changed\n");
+            write_to_client("Password changed\n");
         }
         else {
-            write_to_host("You are not signed in");
+            write_to_client("You are not signed in");
         }
     }
     else if ((data[0] - '0') == header_type::delete_account_) {
         if (_username == username_something.first) {
             delete_account(username_something.first, _sqltable);
             _username = "";
-            write_to_host("Account deleted\n");
+            write_to_client("Account deleted\n");
         }
         else {
-            write_to_host("Cannot delete account\n");
+            write_to_client("Cannot delete account\n");
         }
     }
 

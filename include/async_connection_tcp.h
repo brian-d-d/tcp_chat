@@ -38,10 +38,6 @@ class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
 
         std::string getUsername();
 
-        std::pair<std::string, std::string> split_data(std::string data);
-
-        void handle_data(std::string data);
-
     private:
         tcp::socket _socket;
         tcp_server& _server;
@@ -51,6 +47,10 @@ class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
         std::string _username;
 
         void handle_read_socket(const boost::system::error_code& error, std::size_t bytes_transferred);
+
+        std::pair<std::string, std::string> split_data(std::string data);
+
+        void handle_data(std::string data);
 };
 
 #endif

@@ -69,10 +69,13 @@ void tcp_connection::handle_data(std::string data) {
         }
     }
     else if ((data[0] - '0') == header_type::username_password_) {
-        if (check_login_details(username_something.first, username_something.second, _sqltable)) {
+        if (check_login_details(username_something.first, username_something.second, _sqltable) && _username == "") {
             write_to_client("Correct combination\n");
             bind_account(username_something.first, _socket.remote_endpoint().address().to_string(), _socket.remote_endpoint().port(), _sqltable);
             _username = username_something.first;
+        }
+        else if (_username != "") {
+            write_to_client("Already signed into another account\n");
         }
         else {
             write_to_client("Invalid combination\n");

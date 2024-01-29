@@ -24,7 +24,9 @@ std::pair<std::string, int> get_account_endpoint(std::string username, mysqlx::T
 
     std::pair<std::string, int> ip_port;
 
-    if (row.isNull() || (row.getBytes(2)).first[0] == false) {
+    //The second statement is getting column 2 (Logged_In) and then getting the first byte which is a boolean
+    //So it checks if that username is logged in or not
+    if (row.isNull() || !(row.getBytes(2)).first[0]) {
         ip_port.first = "NULL";
     }
     else {

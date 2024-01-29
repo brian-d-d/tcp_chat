@@ -12,7 +12,7 @@ all: $(OBJS)
 	$(C++) $(C++FLAGS) $^ -L $(LIB) -lcryptopp -lmysqlcppconn8  -o async_tcp
 
 build/%.o: src/%.cpp
-	$(C++) $(C++FLAGS) -I ./$(INCLUDE) -I ./$(LIB) -I ./$(LIB)/built_boost -c $< -o $@ 
+	$(C++) $(C++FLAGS) -I ./$(INCLUDE) -I ./$(LIB)/built_boost -c $< -o $@ 
 
 clean: 
 	rm -rf $(BUILD) && mkdir $(BUILD)

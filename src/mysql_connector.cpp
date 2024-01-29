@@ -1,13 +1,13 @@
 #include "mysql_connector.h"
 
 int check_login_details(std::string username, std::string password, mysqlx::Table& connections_table) {
-    mysqlx::RowResult results = connections_table.select("Username", "Password")
+    mysqlx::RowResult results = connections_table.select("Username", "Password", "Logged_In")
                                                  .where("Username like :username AND Password like :password")
                                                  .bind("username", username).bind("password", password).execute();
 
     mysqlx::Row row = results.fetchOne();
 
-    if (row.isNull()) {
+    if (row.isNull() || (row.getBytes(2)).first[0]) {
         return false;
     }
     else {

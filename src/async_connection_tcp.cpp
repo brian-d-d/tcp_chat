@@ -78,7 +78,7 @@ void tcp_connection::handle_data(std::string data) {
             write_to_client("Already signed into another account\n");
         }
         else {
-            write_to_client("Invalid combination\n");
+            write_to_client("Invalid combination or account already in use\n");
         }
     }
     else if ((data[0] - '0') == header_type::new_username_password_) {

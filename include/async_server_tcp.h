@@ -6,7 +6,6 @@
 #include <cstdlib>
 #include <concepts>
 #include "boost/asio.hpp"
-#include "boost/regex.hpp"
 #include "async_connection_tcp.h"
 #include "utils_tcp.h"
 #include "mysql_connector.h"

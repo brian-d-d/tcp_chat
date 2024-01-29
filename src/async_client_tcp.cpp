@@ -3,16 +3,13 @@
 tcp_client::tcp_client(boost::asio::io_context& io_context) :
     _io_context(io_context), 
     _socket(io_context), 
-    _stdin(io_context, ::dup(STDIN_FILENO)), 
-    _acceptor(io_context),
-    _connection_status(false) { 
+    _stdin(io_context, ::dup(STDIN_FILENO)) { 
 }
 
 void tcp_client::connect_to(std::string_view host, std::string_view port) {
     tcp::resolver resolver(_io_context);
-    _endpoints = resolver.resolve(host, port);
-    boost::asio::connect(_socket, _endpoints);
-    _connection_status = true;
+    tcp::resolver::results_type endpoints = resolver.resolve(host, port);
+    boost::asio::connect(_socket, endpoints);
 
     std::cout << "Connected to "  
     << _socket.remote_endpoint().address() << ":" 
@@ -59,7 +56,7 @@ void tcp_client::handle_read_socket(const boost::system::error_code& error, std:
         
         read_from_socket();
     }
-    else if (error && _connection_status) {
+    else {
         _socket.close();
         _io_context.stop();
     }

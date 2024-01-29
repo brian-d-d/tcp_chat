@@ -18,12 +18,9 @@ class tcp_client {
     private:
         boost::asio::io_context& _io_context;
         tcp::socket _socket;
-        tcp::resolver::results_type _endpoints;
         std::array<char, 128> _stdin_buffer;
         boost::asio::streambuf _socket_buffer;
         boost::asio::posix::stream_descriptor _stdin;
-        tcp::acceptor _acceptor;
-        bool _connection_status;
 
         void read_from_socket();
 
